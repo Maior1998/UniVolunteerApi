@@ -3,7 +3,9 @@ Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio Version 16
 VisualStudioVersion = 16.0.31313.79
 MinimumVisualStudioVersion = 10.0.40219.1
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "UniVolunteerApi", "UniVolunteerApi\UniVolunteerApi.csproj", "{FA28A58C-B05E-425B-8BF7-2FA68CA367DB}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "UniVolunteerApi", "UniVolunteerApi\UniVolunteerApi.csproj", "{FA28A58C-B05E-425B-8BF7-2FA68CA367DB}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "UniVolunteerDbModel", "UniVolunteerDbModel\UniVolunteerDbModel.csproj", "{428647FC-E42A-40EA-9656-9BAB71D44BDC}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -15,6 +17,10 @@ Global
 		{FA28A58C-B05E-425B-8BF7-2FA68CA367DB}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{FA28A58C-B05E-425B-8BF7-2FA68CA367DB}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{FA28A58C-B05E-425B-8BF7-2FA68CA367DB}.Release|Any CPU.Build.0 = Release|Any CPU
+		{428647FC-E42A-40EA-9656-9BAB71D44BDC}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{428647FC-E42A-40EA-9656-9BAB71D44BDC}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{428647FC-E42A-40EA-9656-9BAB71D44BDC}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{428647FC-E42A-40EA-9656-9BAB71D44BDC}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
