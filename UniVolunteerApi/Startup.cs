@@ -28,17 +28,20 @@ namespace UniVolunteerApi
         // This method gets called by the runtime. Use this method to add services to the container.
         public void ConfigureServices(IServiceCollection services)
         {
-            services.AddTransient<IUniVolunteerRepository, SqlLiteUniRepository>();
+            services.AddSingleton<IUniVolunteerRepository, SqlLiteUniRepository>();
             services.AddSingleton<UniVolunteerController>();
 
 
 
 
 
-            services.AddControllers();
+            services
+                .AddControllers()
+                .AddNewtonsoftJson();
+
             services.AddSwaggerGen(c =>
             {
-                c.SwaggerDoc("v1", new OpenApiInfo { Title = "UniVolunteerApi", Version = "v1" });
+                c.SwaggerDoc("v1", new() { Title = "UniVolunteerApi", Version = "v1" });
             });
         }
 

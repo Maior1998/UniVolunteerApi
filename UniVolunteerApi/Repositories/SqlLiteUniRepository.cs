@@ -8,19 +8,11 @@ using UniVolunteerDbModel.Model;
 
 namespace UniVolunteerApi.Repositories
 {
-    public class SqlLiteUniRepository : IUniVolunteerRepository
+    public class SqlLiteUniRepository : DbContextRepository
     {
-        static SqlLiteUniRepository()
+        protected override UniVolunteerContext GetContext()
         {
-            UniVolunteerContext.IsInMemory = false;
-            var context = new UniVolunteerContext();
-            context.Database.EnsureDeleted();
-            context.Database.EnsureCreated();
-        }
-
-        public IEnumerable<UniEvent> GetAllEvents()
-        {
-            return new UniVolunteerContext().UniEvents.ToArray();
+            return new SqliteUniVolunteerContext();
         }
     }
 }

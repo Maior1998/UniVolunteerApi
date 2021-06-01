@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 
 namespace UniVolunteerDbModel.Model
 {
-    public class User
+    public record User
     {
         public Guid Id { get; set; }
         public string FullName { get; set; }

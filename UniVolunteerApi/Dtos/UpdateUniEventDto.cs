@@ -6,12 +6,7 @@ using System.Threading.Tasks;
 
 namespace UniVolunteerApi.Dtos
 {
-    /// <summary>
-    /// Представляет собой "объект переноса данных"
-    /// для представления создания
-    /// нового события университета.
-    /// </summary>
-    public record CreateUniEventDto
+    public record UpdateUniEventDto
     {
         [Required]
         public string Name { get; set; }
