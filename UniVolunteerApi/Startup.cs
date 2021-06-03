@@ -10,9 +10,15 @@ using Microsoft.OpenApi.Models;
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Text;
 using System.Threading.Tasks;
+using Microsoft.AspNetCore.Authentication.JwtBearer;
+using Microsoft.AspNetCore.Identity;
+using Microsoft.IdentityModel.Tokens;
+using UniVolunteerApi.Configuration;
 using UniVolunteerApi.Controllers;
 using UniVolunteerApi.Repositories;
+using UniVolunteerDbModel;
 
 namespace UniVolunteerApi
 {
@@ -28,10 +34,38 @@ namespace UniVolunteerApi
         // This method gets called by the runtime. Use this method to add services to the container.
         public void ConfigureServices(IServiceCollection services)
         {
-            services.AddSingleton<IUniVolunteerRepository, SqlLiteUniRepository>();
-            services.AddSingleton<UniVolunteerController>();
+            services.Configure<JwtConfig>(Configuration.GetSection(nameof(JwtConfig)));
+
+            services.AddSingleton<IUniRepository, DbContextRepository>();
+            services.AddSingleton<UniEventsController>();
+            services.AddSingleton<UniEventUsersController>();
+            services.AddSingleton<AuthManagementController>();
+            services.AddDbContext<UniVolunteerContext>();
 
 
+            services.AddAuthentication(options =>
+            {
+                options.DefaultAuthenticateScheme = JwtBearerDefaults.AuthenticationScheme;
+                options.DefaultScheme = JwtBearerDefaults.AuthenticationScheme;
+                options.DefaultChallengeScheme = JwtBearerDefaults.AuthenticationScheme;
+            })
+                .AddJwtBearer(jwt =>
+                {
+                    byte[] key = Encoding.ASCII.GetBytes(Configuration[$"{nameof(JwtConfig)}:{nameof(JwtConfig.Secret)}"]);
+                    jwt.SaveToken = true;
+                    jwt.TokenValidationParameters = new TokenValidationParameters()
+                    {
+                        ValidateIssuerSigningKey = true,
+                        IssuerSigningKey = new SymmetricSecurityKey(key),
+                        ValidateIssuer = false,
+                        ValidateAudience = false,
+                        ValidateLifetime = true,
+                        RequireExpirationTime = false
+                    };
+                });
+
+            services.AddDefaultIdentity<IdentityUser>(options=>options.SignIn.RequireConfirmedAccount=true)
+                .AddEntityFrameworkStores<UniVolunteerContext>();
 
 
 
@@ -56,7 +90,7 @@ namespace UniVolunteerApi
             }
 
             app.UseRouting();
-
+            app.UseAuthentication();
             app.UseAuthorization();
 
             app.UseEndpoints(endpoints =>

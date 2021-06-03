@@ -3,8 +3,8 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
-
-using UniVolunteerApi.Dtos;
+using UniVolunteerApi.DTOs.Requests;
+using UniVolunteerApi.DTOs.Responses;
 using UniVolunteerApi.Repositories;
 
 using UniVolunteerDbModel.Model;
@@ -12,12 +12,12 @@ using UniVolunteerDbModel.Model;
 namespace UniVolunteerApi.Controllers
 {
     [ApiController]
-    [Route("[controller]")]
-    public class UniVolunteerController : Controller
+    [Route("api/[controller]")]
+    public class UniEventsController : Controller
     {
-        private readonly IUniVolunteerRepository _repository;
+        private readonly IUniRepository _repository;
 
-        public UniVolunteerController(IUniVolunteerRepository repository)
+        public UniEventsController(IUniRepository repository)
         {
             this._repository = repository;
         }
@@ -42,7 +42,7 @@ namespace UniVolunteerApi.Controllers
         {
             UniEvent addingEvent = source.ConvertToUniEvent();
             addingEvent.Id = Guid.NewGuid();
-            addingEvent.CreatedAt = DateTime.Now;
+            addingEvent.CreatedOn = DateTime.Now;
             _repository.CreateUniEvent(addingEvent);
             return CreatedAtAction(
                 nameof(GetUniEvent),
@@ -60,7 +60,7 @@ namespace UniVolunteerApi.Controllers
             {
                 Name = source.Name,
                 Place = source.Place,
-                StartTime = source.StartTime
+                StartTime = source.StartTime,
             };
             _repository.UpdateUniEvent(uniEvent);
             return NoContent();

@@ -1,10 +1,7 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
-using System.Linq;
-using System.Threading.Tasks;
 
-namespace UniVolunteerApi.Dtos
+namespace UniVolunteerApi.DTOs.Requests
 {
     /// <summary>
     /// Представляет собой "объект переноса данных"

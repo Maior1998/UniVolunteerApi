@@ -5,7 +5,7 @@ VisualStudioVersion = 16.0.31313.79
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "UniVolunteerApi", "UniVolunteerApi\UniVolunteerApi.csproj", "{FA28A58C-B05E-425B-8BF7-2FA68CA367DB}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "UniVolunteerDbModel", "UniVolunteerDbModel\UniVolunteerDbModel.csproj", "{428647FC-E42A-40EA-9656-9BAB71D44BDC}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "UniVolunteerDbModel", "UniVolunteerDbModel\UniVolunteerDbModel.csproj", "{428647FC-E42A-40EA-9656-9BAB71D44BDC}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution

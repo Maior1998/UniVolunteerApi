@@ -2,14 +2,21 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+
+using Microsoft.EntityFrameworkCore;
+
 using UniVolunteerDbModel;
 using UniVolunteerDbModel.Model;
 
 namespace UniVolunteerApi.Repositories
 {
-    public abstract class DbContextRepository : IUniVolunteerRepository
+    public class DbContextRepository : IUniRepository
     {
-        protected DbContextRepository()
+        public DbContextRepository()
+        {
+            Reset();
+        }
+        public void Reset()
         {
             UniVolunteerContext context = GetContext();
             context.Database.EnsureDeleted();
@@ -17,15 +24,18 @@ namespace UniVolunteerApi.Repositories
 
             context.UniEvents.Add(new()
             {
-                CreatedAt = DateTime.Now,
-                Name="TEST",
-                Place="ASDSADASD",
+                CreatedOn = DateTime.Now,
+                Name = "TEST",
+                Place = "ASDSADASD",
                 StartTime = DateTime.Now.AddDays(3)
             });
             context.SaveChanges();
-
         }
-        protected abstract UniVolunteerContext GetContext();
+
+        private UniVolunteerContext GetContext()
+        {
+            return new();
+        }
         public IEnumerable<UniEvent> GetAllEvents()
         {
             return GetContext().UniEvents.ToArray();
@@ -57,6 +67,46 @@ namespace UniVolunteerApi.Repositories
             UniEvent deletingUniEvent = context.UniEvents.Single(x => x.Id == id);
             context.Remove(deletingUniEvent);
             context.SaveChanges();
+        }
+
+        public IEnumerable<User> GetAllUsers()
+        {
+            throw new NotImplementedException();
+        }
+
+        public User GetUser(Guid id)
+        {
+            throw new NotImplementedException();
+        }
+
+        public Task<User> GetUserAsync(string login)
+        {
+            UniVolunteerContext context = GetContext();
+            return context.Users.SingleOrDefaultAsync(x => x.Login == login);
+        }
+
+        public async Task<User> CreateUserAsync(User createUser)
+        {
+            UniVolunteerContext context = GetContext();
+            await context.Users.AddAsync(createUser);
+            await context.SaveChangesAsync();
+            return createUser;
+        }
+
+        public async Task UpdateUser(User updatingUser)
+        {
+            UniVolunteerContext context = GetContext();
+            context.Users.Update(updatingUser);
+            await context.SaveChangesAsync();
+        }
+
+        public async Task DeleteUser(Guid id)
+        {
+            UniVolunteerContext context = GetContext();
+            Task<User> deletingUser = context.Users.SingleOrDefaultAsync(x => x.Id == id);
+            deletingUser.Wait();
+            context.Remove(deletingUser.Result);
+            await context.SaveChangesAsync();
         }
     }
 }

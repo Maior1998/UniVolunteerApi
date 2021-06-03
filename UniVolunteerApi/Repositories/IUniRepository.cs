@@ -1,19 +1,13 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Linq;
-using System.Linq.Expressions;
 using System.Threading.Tasks;
-
-using Microsoft.AspNetCore.Mvc;
-
-using UniVolunteerApi.Dtos;
-
 using UniVolunteerDbModel.Model;
 
 namespace UniVolunteerApi.Repositories
 {
-    public interface IUniVolunteerRepository
+    public interface IUniRepository
     {
+        #region UniEvents
         /// <summary>
         /// Получает список всех событий.
         /// </summary>
@@ -36,6 +30,15 @@ namespace UniVolunteerApi.Repositories
 
         void UpdateUniEvent(UniEvent updatingUniEvent);
         void DeleteUniEvent(Guid id);
+        #endregion
 
+        #region UniUsers
+        IEnumerable<User> GetAllUsers();
+        User GetUser(Guid id);
+        Task<User> GetUserAsync(string login);
+        Task<User> CreateUserAsync(User createUser);
+        Task UpdateUser(User updatingUser);
+        Task DeleteUser(Guid id);
+        #endregion
     }
 }
