@@ -19,8 +19,12 @@
   </ItemGroup>
 
   <ItemGroup>
-    <Folder Include="DTOs\UniEventsDtos\" />
-    <Folder Include="DTOs\UsersDtos\" />
+    <Folder Include="Model\" />
+    <Folder Include="Model\DTOs\" />
   </ItemGroup>
 
+  <ItemGroup>
+    <None Remove="Model\" />
+    <None Remove="Model\DTOs\" />
+  </ItemGroup>
 </Project>

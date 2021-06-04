@@ -69,12 +69,12 @@ namespace UniVolunteerApi.Repositories
             context.SaveChanges();
         }
 
-        public IEnumerable<User> GetAllUsers()
+        public Task<IEnumerable<User>> GetAllUsersAsync()
         {
             throw new NotImplementedException();
         }
 
-        public User GetUser(Guid id)
+        public Task<User> GetUserAsync(Guid id)
         {
             throw new NotImplementedException();
         }
@@ -93,20 +93,28 @@ namespace UniVolunteerApi.Repositories
             return createUser;
         }
 
-        public async Task UpdateUser(User updatingUser)
+        public async Task UpdateUserAsync(User updatingUser)
         {
             UniVolunteerContext context = GetContext();
             context.Users.Update(updatingUser);
             await context.SaveChangesAsync();
         }
 
-        public async Task DeleteUser(Guid id)
+        public async Task DeleteUserAsync(Guid id)
         {
             UniVolunteerContext context = GetContext();
             Task<User> deletingUser = context.Users.SingleOrDefaultAsync(x => x.Id == id);
             deletingUser.Wait();
             context.Remove(deletingUser.Result);
             await context.SaveChangesAsync();
+        }
+
+        public async Task AddRefreshTokenAsync(RefreshToken token)
+        {
+            UniVolunteerContext context = GetContext();
+            await context.RefreshTokens.AddAsync(token);
+            await context.SaveChangesAsync();
+
         }
     }
 }

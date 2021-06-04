@@ -33,12 +33,15 @@ namespace UniVolunteerApi.Repositories
         #endregion
 
         #region UniUsers
-        IEnumerable<User> GetAllUsers();
-        User GetUser(Guid id);
+        Task<IEnumerable<User>> GetAllUsersAsync();
+        Task<User> GetUserAsync(Guid id);
         Task<User> GetUserAsync(string login);
         Task<User> CreateUserAsync(User createUser);
-        Task UpdateUser(User updatingUser);
-        Task DeleteUser(Guid id);
+        Task UpdateUserAsync(User updatingUser);
+        Task DeleteUserAsync(Guid id);
+        Task AddRefreshTokenAsync(RefreshToken token);
+        Task<RefreshToken> GetRefreshTokenAsync(string token);
+        Task UpdateRefreshTokenAsync(RefreshToken token);
         #endregion
     }
 }

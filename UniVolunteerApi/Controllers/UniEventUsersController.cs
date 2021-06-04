@@ -2,7 +2,8 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
-
+using Microsoft.AspNetCore.Authentication.JwtBearer;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
 using UniVolunteerApi.DTOs.Requests;
@@ -15,6 +16,7 @@ namespace UniVolunteerApi.Controllers
 {
     [ApiController]
     [Route("api/[controller]")]
+    [Authorize(AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme)]
     public class UniEventUsersController : Controller
     {
         private readonly IUniRepository repository;
@@ -26,9 +28,9 @@ namespace UniVolunteerApi.Controllers
 
 
         [HttpGet("{id}")]
-        public ActionResult<UserDto> GetUser(Guid id)
+        public async Task<ActionResult<UserDto>> GetUser(Guid id)
         {
-            User user = repository.GetUser(id);
+            User user =  await repository.GetUserAsync(id);
             if (user == null)
                 return NotFound();
             return user.ConvertToUserDto();

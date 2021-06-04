@@ -68,5 +68,17 @@ namespace UniVolunteerApi
             };
 
         }
+
+        /// <summary>
+        /// Выполняет проверку пароля пользователя.
+        /// </summary>
+        /// <param name="user">Пользователь, пароль которого необходимо проверить.</param>
+        /// <param name="pass">Пароль, который необходимо проверить.</param>
+        /// <returns>Результат проверки пароля.</returns>
+        public static bool CheckPass(this User user, string pass)
+        {
+            string hash = SaltHelper.GetHash(pass, user.Salt);
+            return hash == user.PasswordHash;
+        }
     }
 }

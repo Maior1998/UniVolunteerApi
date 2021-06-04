@@ -43,6 +43,17 @@ namespace UniVolunteerApi
             services.AddDbContext<UniVolunteerContext>();
 
 
+            byte[] key = Encoding.ASCII.GetBytes(Configuration[$"{nameof(JwtConfig)}:{nameof(JwtConfig.Secret)}"]);
+            TokenValidationParameters tokenValidationParams = new TokenValidationParameters()
+            {
+                ValidateIssuerSigningKey = true,
+                IssuerSigningKey = new SymmetricSecurityKey(key),
+                ValidateIssuer = false,
+                ValidateAudience = false,
+                ValidateLifetime = true,
+                RequireExpirationTime = false,
+            };
+            services.AddSingleton(tokenValidationParams);
             services.AddAuthentication(options =>
             {
                 options.DefaultAuthenticateScheme = JwtBearerDefaults.AuthenticationScheme;
@@ -51,20 +62,11 @@ namespace UniVolunteerApi
             })
                 .AddJwtBearer(jwt =>
                 {
-                    byte[] key = Encoding.ASCII.GetBytes(Configuration[$"{nameof(JwtConfig)}:{nameof(JwtConfig.Secret)}"]);
                     jwt.SaveToken = true;
-                    jwt.TokenValidationParameters = new TokenValidationParameters()
-                    {
-                        ValidateIssuerSigningKey = true,
-                        IssuerSigningKey = new SymmetricSecurityKey(key),
-                        ValidateIssuer = false,
-                        ValidateAudience = false,
-                        ValidateLifetime = true,
-                        RequireExpirationTime = false
-                    };
+                    jwt.TokenValidationParameters = tokenValidationParams;
                 });
 
-            services.AddDefaultIdentity<IdentityUser>(options=>options.SignIn.RequireConfirmedAccount=true)
+            services.AddDefaultIdentity<IdentityUser>(options => options.SignIn.RequireConfirmedAccount = true)
                 .AddEntityFrameworkStores<UniVolunteerContext>();
 
 
