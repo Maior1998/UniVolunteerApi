@@ -69,14 +69,16 @@ namespace UniVolunteerApi.Repositories
             context.SaveChanges();
         }
 
-        public Task<IEnumerable<User>> GetAllUsersAsync()
+        public Task<User[]> GetAllUsersAsync()
         {
-            throw new NotImplementedException();
+            UniVolunteerContext context = GetContext();
+            return context.Users.ToArrayAsync();
         }
 
         public Task<User> GetUserAsync(Guid id)
         {
-            throw new NotImplementedException();
+            UniVolunteerContext context = GetContext();
+            return context.Users.SingleOrDefaultAsync(x => x.Id == id);
         }
 
         public Task<User> GetUserAsync(string login)
@@ -119,12 +121,15 @@ namespace UniVolunteerApi.Repositories
 
         public Task<RefreshToken> GetRefreshTokenAsync(string token)
         {
-            throw new NotImplementedException();
+            UniVolunteerContext context = GetContext();
+            return context.RefreshTokens.SingleOrDefaultAsync(x => x.Token == token);
         }
 
         public Task UpdateRefreshTokenAsync(RefreshToken token)
         {
-            throw new NotImplementedException();
+            UniVolunteerContext context = GetContext();
+            context.RefreshTokens.Update(token);
+            return context.SaveChangesAsync();
         }
     }
 }

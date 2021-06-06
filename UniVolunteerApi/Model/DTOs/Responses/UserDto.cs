@@ -2,6 +2,9 @@
 
 namespace UniVolunteerApi.DTOs.Responses
 {
+    /// <summary>
+    /// Представляет собой объект переноса данных для описания сущности пользователя.
+    /// </summary>
     public record UserDto
     {
         /// <summary>
@@ -20,6 +23,11 @@ namespace UniVolunteerApi.DTOs.Responses
         /// Роль пользователя в системе.
         /// </summary>
         public Guid? RoleId { get; set; }
+
+        /// <summary>
+        /// Время регистрации пользователя.
+        /// </summary>
+        public DateTime RegisteredOn { get; set; }
 
     }
 }

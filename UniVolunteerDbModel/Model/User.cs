@@ -21,9 +21,9 @@ namespace UniVolunteerDbModel.Model
         [Key]
         public Guid Id { get; set; }
         /// <summary>
-        /// Время создания записи.
+        /// Время регистрации пользователя.
         /// </summary>
-        public DateTime CreatedOn { get; set; }
+        public DateTime RegisteredOn { get; set; }
         /// <summary>
         /// ФИО пользователя.
         /// </summary>
@@ -55,6 +55,10 @@ namespace UniVolunteerDbModel.Model
         /// Список мероприятий, в которых данный пользователь принимает участие.
         /// </summary>
         public ICollection<UniEvent> ParticipatesInEvents { get; set; } = new List<UniEvent>();
+        /// <summary>
+        /// Список мероприятий, которые создал данный пользователь.
+        /// </summary>
+        public ICollection<UniEvent> CreatedUniEvents { get; set; } = new List<UniEvent>();
 
     }
 }

@@ -34,6 +34,9 @@ namespace UniVolunteerApi
             {
                 Id = source.Id,
                 CreatedOn = source.CreatedOn,
+                CreatedById = source.CreatedById,
+                ModifiedOn = source.ModifiedOn,
+                ModifiedById = source.ModifiedById,
                 Name = source.Name,
                 Place = source.Place,
                 StartTime = source.StartTime
@@ -62,7 +65,8 @@ namespace UniVolunteerApi
             return new()
             {
                 Id = source.Id,
-                CreatedOn = source.CreatedOn,
+                RegisteredOn = source.RegisteredOn,
+                CreatedOn = source.RegisteredOn,
                 FullName = source.FullName,
                 RoleId = source.RoleId
             };

@@ -33,7 +33,7 @@ namespace UniVolunteerApi.Repositories
         #endregion
 
         #region UniUsers
-        Task<IEnumerable<User>> GetAllUsersAsync();
+        Task<User[]> GetAllUsersAsync();
         Task<User> GetUserAsync(Guid id);
         Task<User> GetUserAsync(string login);
         Task<User> CreateUserAsync(User createUser);

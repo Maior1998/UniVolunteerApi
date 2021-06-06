@@ -19,7 +19,6 @@ namespace UniVolunteerApi.Controllers
     public class UniEventsController : Controller
     {
         private readonly IUniRepository repository;
-
         public UniEventsController(IUniRepository repository)
         {
             this.repository = repository;
@@ -28,7 +27,6 @@ namespace UniVolunteerApi.Controllers
         [HttpGet]
         public ActionResult<IEnumerable<UniEventDto>> GetUniEvents()
         {
-            var context = HttpContext;
             return Ok(repository.GetAllEvents().Select(x => x.ConvertToUniEventDto()));
         }
 
@@ -41,17 +39,21 @@ namespace UniVolunteerApi.Controllers
             return uniEvent.ConvertToUniEventDto();
         }
 
+        private Guid GetUserId => Guid.Parse(User.Claims.Single(x => x.Type == "Id").Value);
+
+
         [HttpPost]
         public ActionResult<UniEventDto> CreateUniEvent(CreateUniEventDto source)
         {
             UniEvent addingEvent = source.ConvertToUniEvent();
+            addingEvent.CreatedById = addingEvent.ModifiedById = GetUserId;
             addingEvent.Id = Guid.NewGuid();
-            addingEvent.CreatedOn = DateTime.Now;
-            repository.CreateUniEvent(addingEvent);
+            addingEvent.CreatedOn = addingEvent.ModifiedOn = DateTime.Now;
+            UniEvent createdEvent = repository.CreateUniEvent(addingEvent);
             return CreatedAtAction(
                 nameof(GetUniEvent),
-                new { id = addingEvent.Id },
-                addingEvent.ConvertToUniEventDto());
+                new { id = createdEvent.Id },
+                createdEvent.ConvertToUniEventDto());
         }
         [HttpPut("{id}")]
         public ActionResult UpdateUniEvent(Guid id, UpdateUniEventDto source)
@@ -65,6 +67,8 @@ namespace UniVolunteerApi.Controllers
                 Name = source.Name,
                 Place = source.Place,
                 StartTime = source.StartTime,
+                ModifiedOn = DateTime.Now,
+                ModifiedById = GetUserId
             };
             repository.UpdateUniEvent(uniEvent);
             return NoContent();

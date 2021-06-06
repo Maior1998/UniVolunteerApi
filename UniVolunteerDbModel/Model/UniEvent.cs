@@ -17,12 +17,37 @@ namespace UniVolunteerDbModel.Model
         /// <summary>
         /// Номер записи в БД.
         /// </summary>
-
         public Guid Id { get; set; }
+
+        #region Created On\By Properties
         /// <summary>
         /// Время создания записи.
         /// </summary>
         public DateTime CreatedOn { get; set; }
+        /// <summary>
+        /// Id пользователя, создавшего данное событие.
+        /// </summary>
+        public Guid? CreatedById { get; set; }
+        /// <summary>
+        /// Пользователь, создавший данное событие.
+        /// </summary>
+        public User CreatedBy { get; set; }
+        #endregion
+
+        #region Modified On\By Properties
+        /// <summary>
+        /// Время создания записи.
+        /// </summary>
+        public DateTime ModifiedOn { get; set; }
+        /// <summary>
+        /// Id пользователя, создавшего данное событие.
+        /// </summary>
+        public Guid? ModifiedById { get; set; }
+        /// <summary>
+        /// Пользователь, создавший данное событие.
+        /// </summary>
+        public User ModifiedBy { get; set; }
+        #endregion
         /// <summary>
         /// Название данного события.
         /// </summary>

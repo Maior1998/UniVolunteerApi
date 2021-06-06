@@ -64,7 +64,8 @@ namespace UniVolunteerApi.Controllers
                 {
                     Login = registeringUser.Login,
                     Salt = salt,
-                    PasswordHash = passHash
+                    PasswordHash = passHash,
+                    RegisteredOn = DateTime.Now
                 };
                 User isCreated = await repository.CreateUserAsync(newUser);
                 if (isCreated != null)
@@ -226,16 +227,16 @@ namespace UniVolunteerApi.Controllers
                 long utcExpiryDate = long.Parse(tokenInVerification.Claims.FirstOrDefault(x => x.Type == JwtRegisteredClaimNames.Exp).Value);
                 DateTime expiryDate = UnixTimeStampToDateTime(utcExpiryDate);
 
-                if(expiryDate > DateTime.UtcNow)
+                if (expiryDate > DateTime.UtcNow)
                     return new AuthResult()
                     {
                         Success = false,
-                        Errors = new() { "Token has not yet expired"}
+                        Errors = new() { "Token has not yet expired" }
                     };
 
                 //Проверка существования токена в базе
                 var storedToken = await repository.GetRefreshTokenAsync(tokenRequest.RefreshToken);
-                if(storedToken != null)
+                if (storedToken != null)
                     return new AuthResult()
                     {
                         Success = false,
@@ -244,7 +245,7 @@ namespace UniVolunteerApi.Controllers
 
 
                 //Проверка того, что токен могли уже использовать
-                if(storedToken.IsUsed)
+                if (storedToken.IsUsed)
                     return new AuthResult()
                     {
                         Success = false,
@@ -252,7 +253,7 @@ namespace UniVolunteerApi.Controllers
                     };
 
                 //Проверка на то, что токен могли отозвать
-                if(storedToken.IsRevoked)
+                if (storedToken.IsRevoked)
                     return new AuthResult()
                     {
                         Success = false,
@@ -261,9 +262,9 @@ namespace UniVolunteerApi.Controllers
 
 
                 //Проверка соответствия Jti и JwtId из базы
-                string jti = tokenInVerification.Claims.SingleOrDefault(x=>x.Type == JwtRegisteredClaimNames.Jti).Value;
+                string jti = tokenInVerification.Claims.SingleOrDefault(x => x.Type == JwtRegisteredClaimNames.Jti).Value;
 
-                if(storedToken.JwtId != jti)
+                if (storedToken.JwtId != jti)
                     return new AuthResult()
                     {
                         Success = false,

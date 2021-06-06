@@ -12,6 +12,7 @@
     <PackageReference Include="Microsoft.AspNetCore.Mvc.NewtonsoftJson" Version="5.0.6" />
     <PackageReference Include="Newtonsoft.Json" Version="13.0.1" />
     <PackageReference Include="Swashbuckle.AspNetCore" Version="6.1.4" />
+    <PackageReference Include="Microsoft.AspNetCore.Session" Version="2.2.0" />
   </ItemGroup>
 
   <ItemGroup>
@@ -26,5 +27,6 @@
   <ItemGroup>
     <None Remove="Model\" />
     <None Remove="Model\DTOs\" />
+    <None Remove="Microsoft.AspNetCore.Session" />
   </ItemGroup>
 </Project>

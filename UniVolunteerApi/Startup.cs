@@ -19,6 +19,8 @@ using UniVolunteerApi.Configuration;
 using UniVolunteerApi.Controllers;
 using UniVolunteerApi.Repositories;
 using UniVolunteerDbModel;
+using UniVolunteerDbModel.Model;
+using Microsoft.AspNetCore.Http;
 
 namespace UniVolunteerApi
 {
@@ -69,8 +71,7 @@ namespace UniVolunteerApi
             services.AddDefaultIdentity<IdentityUser>(options => options.SignIn.RequireConfirmedAccount = true)
                 .AddEntityFrameworkStores<UniVolunteerContext>();
 
-
-
+            
             services
                 .AddControllers()
                 .AddNewtonsoftJson();
@@ -90,7 +91,6 @@ namespace UniVolunteerApi
                 app.UseSwagger();
                 app.UseSwaggerUI(c => c.SwaggerEndpoint("/swagger/v1/swagger.json", "UniVolunteerApi v1"));
             }
-
             app.UseRouting();
             app.UseAuthentication();
             app.UseAuthorization();
