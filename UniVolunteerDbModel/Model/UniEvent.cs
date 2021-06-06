@@ -23,9 +23,21 @@ namespace UniVolunteerDbModel.Model
         /// Время создания записи.
         /// </summary>
         public DateTime CreatedOn { get; set; }
+        /// <summary>
+        /// Название данного события.
+        /// </summary>
         public string Name { get; set; }
+        /// <summary>
+        /// Место проведения мероприятия.
+        /// </summary>
         public string Place { get; set; }
+        /// <summary>
+        /// Время проведения мероприятия.
+        /// </summary>
         public DateTime? StartTime { get; set; }
+        /// <summary>
+        /// Списк участвующих в данном мероприятии пользователей.
+        /// </summary>
         public ICollection<User> Participants { get; set; } = new List<User>();
     }
 }

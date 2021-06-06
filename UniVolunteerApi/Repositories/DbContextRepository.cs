@@ -116,5 +116,15 @@ namespace UniVolunteerApi.Repositories
             await context.SaveChangesAsync();
 
         }
+
+        public Task<RefreshToken> GetRefreshTokenAsync(string token)
+        {
+            throw new NotImplementedException();
+        }
+
+        public Task UpdateRefreshTokenAsync(RefreshToken token)
+        {
+            throw new NotImplementedException();
+        }
     }
 }

@@ -39,9 +39,11 @@ namespace UniVolunteerApi.Repositories
         Task<User> CreateUserAsync(User createUser);
         Task UpdateUserAsync(User updatingUser);
         Task DeleteUserAsync(Guid id);
+        #endregion
+
         Task AddRefreshTokenAsync(RefreshToken token);
         Task<RefreshToken> GetRefreshTokenAsync(string token);
         Task UpdateRefreshTokenAsync(RefreshToken token);
-        #endregion
+        
     }
 }

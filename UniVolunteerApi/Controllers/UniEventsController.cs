@@ -18,23 +18,24 @@ namespace UniVolunteerApi.Controllers
     [Authorize(AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme)]
     public class UniEventsController : Controller
     {
-        private readonly IUniRepository _repository;
+        private readonly IUniRepository repository;
 
         public UniEventsController(IUniRepository repository)
         {
-            this._repository = repository;
+            this.repository = repository;
         }
 
         [HttpGet]
         public ActionResult<IEnumerable<UniEventDto>> GetUniEvents()
         {
-            return Ok(_repository.GetAllEvents().Select(x => x.ConvertToUniEventDto()));
+            var context = HttpContext;
+            return Ok(repository.GetAllEvents().Select(x => x.ConvertToUniEventDto()));
         }
 
         [HttpGet("{id}")]
         public ActionResult<UniEventDto> GetUniEvent(Guid id)
         {
-            UniEvent uniEvent = _repository.GetEvent(id);
+            UniEvent uniEvent = repository.GetEvent(id);
             if (uniEvent == null)
                 return NotFound();
             return uniEvent.ConvertToUniEventDto();
@@ -46,7 +47,7 @@ namespace UniVolunteerApi.Controllers
             UniEvent addingEvent = source.ConvertToUniEvent();
             addingEvent.Id = Guid.NewGuid();
             addingEvent.CreatedOn = DateTime.Now;
-            _repository.CreateUniEvent(addingEvent);
+            repository.CreateUniEvent(addingEvent);
             return CreatedAtAction(
                 nameof(GetUniEvent),
                 new { id = addingEvent.Id },
@@ -55,7 +56,7 @@ namespace UniVolunteerApi.Controllers
         [HttpPut("{id}")]
         public ActionResult UpdateUniEvent(Guid id, UpdateUniEventDto source)
         {
-            UniEvent updatingUniEvent = _repository.GetEvent(id);
+            UniEvent updatingUniEvent = repository.GetEvent(id);
             if (updatingUniEvent == null)
                 return NotFound();
 
@@ -65,17 +66,17 @@ namespace UniVolunteerApi.Controllers
                 Place = source.Place,
                 StartTime = source.StartTime,
             };
-            _repository.UpdateUniEvent(uniEvent);
+            repository.UpdateUniEvent(uniEvent);
             return NoContent();
         }
 
         [HttpDelete("{id}")]
         public ActionResult DeleteUniEvent(Guid id)
         {
-            UniEvent deletingUniEvent = _repository.GetEvent(id);
+            UniEvent deletingUniEvent = repository.GetEvent(id);
             if (deletingUniEvent == null)
                 return NotFound();
-            _repository.DeleteUniEvent(deletingUniEvent.Id);
+            repository.DeleteUniEvent(deletingUniEvent.Id);
             return NoContent();
         }
     }

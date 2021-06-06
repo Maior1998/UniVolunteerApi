@@ -7,7 +7,7 @@ using UniVolunteerDbModel.Model;
 
 namespace UniVolunteerDbModel
 {
-    public class UniVolunteerContext : IdentityDbContext
+    public class UniVolunteerContext : DbContext
     {
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
@@ -21,7 +21,7 @@ namespace UniVolunteerDbModel
             modelBuilder
                 .Entity<User>()
                 .HasOne(x => x.Role)
-                .WithMany(x => x.UsersInRoles)
+                .WithMany(x => x.UsersInRole)
                 .HasForeignKey(x => x.RoleId);
 
         }

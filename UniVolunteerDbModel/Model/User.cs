@@ -13,7 +13,7 @@ namespace UniVolunteerDbModel.Model
     /// Представляет собой пользователя системы.
     /// </summary>
     [Table("Users")]
-    public record User 
+    public record User
     {
         /// <summary>
         /// Номер записи в БД.
@@ -42,9 +42,13 @@ namespace UniVolunteerDbModel.Model
         public string Salt { get; set; }
 
         /// <summary>
-        /// Роль пользователя в системе.
+        /// Роль пользователя.
         /// </summary>
+        [ForeignKey(nameof(RoleId))]
         public UserRole Role { get; set; }
+        /// <summary>
+        /// Id роли пользователя.
+        /// </summary>
         public Guid? RoleId { get; set; }
 
         /// <summary>

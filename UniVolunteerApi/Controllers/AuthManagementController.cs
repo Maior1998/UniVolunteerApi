@@ -159,7 +159,7 @@ namespace UniVolunteerApi.Controllers
                 IsUsed = false,
                 IsRevoked = false,
                 UserId = user.Id,
-                AddedTime = DateTime.UtcNow,
+                CreatedOn = DateTime.UtcNow,
                 ExpiryTime = DateTime.UtcNow.AddMonths(1),
                 Token = $"{Guid.NewGuid()}-{Guid.NewGuid()}"
             };

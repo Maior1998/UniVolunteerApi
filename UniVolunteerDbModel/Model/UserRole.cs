@@ -20,7 +20,13 @@ namespace UniVolunteerDbModel.Model
         /// Время создания записи.
         /// </summary>
         public DateTime CreatedOn { get; set; }
+        /// <summary>
+        /// Название данной роли.
+        /// </summary>
         public string Name { get; set; }
-        public ICollection<User> UsersInRoles { get; set; } = new List<User>();
+        /// <summary>
+        /// Список пользователей, имеющих данную роль.
+        /// </summary>
+        public ICollection<User> UsersInRole { get; set; } = new List<User>();
     }
 }
