@@ -50,7 +50,7 @@ namespace UniVolunteerApi.Repositories
         /// <summary>
         /// Получает роль по ее Id (или возвращает null если роль не найдена).
         /// </summary>
-        Task<UserRole> GetUserRole(Guid id);
+        Task<UserRole> GetUserRoleAsync(Guid id);
         /// <summary>
         /// Получает все роли пользователей в системе.
         /// </summary>
@@ -79,7 +79,6 @@ namespace UniVolunteerApi.Repositories
         Task<User> CreateUserAsync(User createUser);
         Task UpdateUserAsync(User updatingUser);
         Task DeleteUserAsync(Guid id);
-        Task<UserRole> GetUserRoleAsync(Guid id);
         #endregion
 
         Task AddRefreshTokenAsync(RefreshToken token);

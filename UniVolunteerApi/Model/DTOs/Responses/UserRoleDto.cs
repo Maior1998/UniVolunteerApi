@@ -5,6 +5,7 @@ namespace UniVolunteerApi.Model.DTOs.Responses
 {
     public record UserRoleDto
     {
+        public Guid Id { get; set; }
         /// <summary>
         /// Время создания записи.
         /// </summary>

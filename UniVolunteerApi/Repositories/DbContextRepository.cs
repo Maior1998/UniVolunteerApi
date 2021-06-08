@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Security.Cryptography.X509Certificates;
 using System.Threading.Tasks;
 
 using Microsoft.EntityFrameworkCore;
@@ -160,59 +161,72 @@ namespace UniVolunteerApi.Repositories
             return events;
         }
 
-        public Task<UserRole> CreateUserRole(UserRole role)
+        public async Task<UserRole> CreateUserRole(UserRole role)
         {
-            throw new NotImplementedException();
+            UniVolunteerContext context = GetContext();
+            await context.UserRoles.AddAsync(role);
+            await context.SaveChangesAsync();
+            return role;
         }
 
-        public Task DeleteUserRole(Guid id)
+        public async Task DeleteUserRole(Guid id)
         {
-            throw new NotImplementedException();
+            UniVolunteerContext context = GetContext();
+            UserRole userRole = await context.UserRoles.SingleAsync(x => x.Id == id);
+            context.UserRoles.Remove(userRole);
+            await context.SaveChangesAsync();
         }
 
-        public Task UpdateUserRole(UserRole role)
+        public async Task UpdateUserRole(UserRole role)
         {
-            throw new NotImplementedException();
-        }
-
-        public Task<UserRole> GetUserRole(Guid id)
-        {
-            throw new NotImplementedException();
-        }
-
-        public Task<UserRole[]> GetUserRoles()
-        {
-            throw new NotImplementedException();
-        }
-
-        public Task SetUserRole(Guid userId, Guid roleId)
-        {
-            throw new NotImplementedException();
-        }
-
-        public Task EnsureUserNotInRole(Guid userId, Guid roleId)
-        {
-            throw new NotImplementedException();
-        }
-
-        public Task SetRoleAccesses(Guid roleId, SecurityAccess newAccess)
-        {
-            throw new NotImplementedException();
-        }
-
-        public Task EnsureRoleHaveAccess(Guid roleId, SecurityAccess access)
-        {
-            throw new NotImplementedException();
-        }
-
-        public Task EnsureRoleNotHaveAccess(Guid roleId, SecurityAccess access)
-        {
-            throw new NotImplementedException();
+            UniVolunteerContext context = GetContext();
+            context.Update(role);
+            await context.SaveChangesAsync();
         }
 
         public Task<UserRole> GetUserRoleAsync(Guid id)
         {
-            throw new NotImplementedException();
+            UniVolunteerContext context = GetContext();
+            return context.UserRoles.SingleAsync(x => x.Id == id);
         }
+
+        public Task<UserRole[]> GetUserRoles()
+        {
+            UniVolunteerContext context = GetContext();
+            return context.UserRoles.ToArrayAsync();
+        }
+
+        public async Task SetUserRole(Guid userId, Guid roleId)
+        {
+            UniVolunteerContext context = GetContext();
+            User user = await context.Users.SingleAsync(x => x.Id == userId);
+            user.RoleId = roleId;
+            await context.SaveChangesAsync();
+        }
+
+        public async Task SetRoleAccesses(Guid roleId, SecurityAccess newAccess)
+        {
+            UniVolunteerContext context = GetContext();
+            UserRole userRole = await context.UserRoles.SingleAsync(x => x.Id == roleId);
+            userRole.Access = newAccess;
+            await context.SaveChangesAsync();
+        }
+
+        public async Task EnsureRoleHaveAccess(Guid roleId, SecurityAccess access)
+        {
+            UniVolunteerContext context = GetContext();
+            UserRole userRole = await context.UserRoles.SingleAsync(x => x.Id == roleId);
+            userRole.Access |= access;
+            await context.SaveChangesAsync();
+        }
+
+        public async Task EnsureRoleNotHaveAccess(Guid roleId, SecurityAccess access)
+        {
+            UniVolunteerContext context = GetContext();
+            UserRole userRole = await context.UserRoles.SingleAsync(x => x.Id == roleId);
+            userRole.Access &= ~(access);
+            await context.SaveChangesAsync();
+        }
+
     }
 }

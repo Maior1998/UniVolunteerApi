@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
@@ -11,6 +12,7 @@ using UniVolunteerApi.DTOs.Responses;
 using UniVolunteerApi.Model.DTOs.Requests;
 using UniVolunteerApi.Repositories;
 using UniVolunteerApi.Services;
+
 using UniVolunteerDbModel.Model;
 
 namespace UniVolunteerApi.Controllers
@@ -66,7 +68,7 @@ namespace UniVolunteerApi.Controllers
             if (role == null)
                 return NotFound();
 
-
+            await repository.SetUserRole(request.UserId, request.RoleId);
             return NoContent();
 
         }

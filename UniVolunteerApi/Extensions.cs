@@ -3,8 +3,12 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Linq.Expressions;
 using System.Threading.Tasks;
+
 using UniVolunteerApi.DTOs.Requests;
 using UniVolunteerApi.DTOs.Responses;
+using UniVolunteerApi.Model.DTOs.Requests;
+using UniVolunteerApi.Model.DTOs.Responses;
+
 using UniVolunteerDbModel.Model;
 
 namespace UniVolunteerApi
@@ -81,6 +85,29 @@ namespace UniVolunteerApi
             };
 
         }
+
+        public static UserRoleDto ConvertToUserRoleDto(this UserRole source)
+        {
+            return new()
+            {
+                Id = source.Id,
+                Access = source.Access,
+                CreatedOn = source.CreatedOn,
+                Name = source.Name
+            };
+        }
+
+        public static UserRole ConvertToUserRole(this CreateUserRoleDto source)
+        {
+            return new()
+            {
+                Id = Guid.NewGuid(),
+                CreatedOn = DateTime.Now,
+                Name = source.Name
+            };
+        }
+
+        
 
         /// <summary>
         /// Выполняет проверку пароля пользователя.
