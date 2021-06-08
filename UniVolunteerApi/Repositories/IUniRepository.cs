@@ -30,6 +30,9 @@ namespace UniVolunteerApi.Repositories
 
         void UpdateUniEvent(UniEvent updatingUniEvent);
         void DeleteUniEvent(Guid id);
+        Task EnsureUserEnrolledToEvent(Guid userId, Guid eventId);
+        Task EnsureUserExitedFromEvent(Guid userId, Guid eventId);
+        Task<IEnumerable<UniEvent>> GetUserParticipatedInEvents(Guid userId);
         #endregion
 
         #region UniUsers

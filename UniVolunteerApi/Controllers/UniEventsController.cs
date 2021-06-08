@@ -5,6 +5,7 @@ using Microsoft.AspNetCore.Mvc;
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Threading.Tasks;
 using UniVolunteerApi.DTOs.Requests;
 using UniVolunteerApi.DTOs.Responses;
 using UniVolunteerApi.Repositories;
@@ -36,17 +37,17 @@ namespace UniVolunteerApi.Controllers
             UniEvent uniEvent = repository.GetEvent(id);
             if (uniEvent == null)
                 return NotFound();
-            return uniEvent.ConvertToUniEventDto();
+            return Ok(uniEvent.ConvertToUniEventDto());
         }
 
-        private Guid GetUserId => Guid.Parse(User.Claims.Single(x => x.Type == "Id").Value);
+        private Guid CurrentUserId => Guid.Parse(User.Claims.Single(x => x.Type == "Id").Value);
 
 
         [HttpPost]
         public ActionResult<UniEventDto> CreateUniEvent(CreateUniEventDto source)
         {
             UniEvent addingEvent = source.ConvertToUniEvent();
-            addingEvent.CreatedById = addingEvent.ModifiedById = GetUserId;
+            addingEvent.CreatedById = addingEvent.ModifiedById = CurrentUserId;
             addingEvent.Id = Guid.NewGuid();
             addingEvent.CreatedOn = addingEvent.ModifiedOn = DateTime.Now;
             UniEvent createdEvent = repository.CreateUniEvent(addingEvent);
@@ -68,7 +69,7 @@ namespace UniVolunteerApi.Controllers
                 Place = source.Place,
                 StartTime = source.StartTime,
                 ModifiedOn = DateTime.Now,
-                ModifiedById = GetUserId
+                ModifiedById = CurrentUserId
             };
             repository.UpdateUniEvent(uniEvent);
             return NoContent();
@@ -80,8 +81,13 @@ namespace UniVolunteerApi.Controllers
             UniEvent deletingUniEvent = repository.GetEvent(id);
             if (deletingUniEvent == null)
                 return NotFound();
+            if (deletingUniEvent.CreatedById != CurrentUserId)
+                return Forbid();
             repository.DeleteUniEvent(deletingUniEvent.Id);
             return NoContent();
         }
+
+        
+
     }
 }
