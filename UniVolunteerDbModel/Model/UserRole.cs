@@ -28,5 +28,7 @@ namespace UniVolunteerDbModel.Model
         /// Список пользователей, имеющих данную роль.
         /// </summary>
         public ICollection<User> UsersInRole { get; set; } = new List<User>();
+
+        public ICollection<SecurityObject> CanAccessObjects { get; set; } = new List<SecurityObject>();
     }
 }

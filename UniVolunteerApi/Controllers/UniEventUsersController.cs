@@ -30,11 +30,13 @@ namespace UniVolunteerApi.Controllers
         [HttpGet("{id}")]
         public async Task<ActionResult<UserDto>> GetUser(Guid id)
         {
-            User user =  await repository.GetUserAsync(id);
+            User user = await repository.GetUserAsync(id);
             if (user == null)
                 return NotFound();
-            return user.ConvertToUserDto();
+            return Ok(user.ConvertToUserDto());
         }
+
+
 
 
 

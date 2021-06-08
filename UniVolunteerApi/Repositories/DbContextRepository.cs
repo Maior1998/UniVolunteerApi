@@ -131,5 +131,33 @@ namespace UniVolunteerApi.Repositories
             context.RefreshTokens.Update(token);
             return context.SaveChangesAsync();
         }
+
+        public async Task EnsureUserEnrolledToEvent(Guid userId, Guid eventId)
+        {
+            UniVolunteerContext context = GetContext();
+            User user = await context.Users.Include(x => x.ParticipatesInEvents).SingleAsync(x => x.Id == userId);
+            if (user.ParticipatesInEvents.Any(x => x.Id == eventId)) return;
+            UniEvent uniEvent = await context.UniEvents.SingleAsync(x => x.Id == eventId);
+            user.ParticipatesInEvents.Add(uniEvent);
+            await context.SaveChangesAsync();
+        }
+
+        public async Task EnsureUserExitedFromEvent(Guid userId, Guid eventId)
+        {
+            UniVolunteerContext context = GetContext();
+            User user = await context.Users.Include(x => x.ParticipatesInEvents).SingleAsync(x => x.Id == userId);
+            UniEvent uniEvent = user.ParticipatesInEvents.SingleOrDefault(x => x.Id == eventId);
+            if (uniEvent == null) return;
+            user.ParticipatesInEvents.Remove(uniEvent);
+            await context.SaveChangesAsync();
+
+        }
+
+        public async Task<IEnumerable<UniEvent>> GetUserParticipatedInEvents(Guid userId)
+        {
+            UniVolunteerContext context = GetContext();
+            IEnumerable<UniEvent> events = await context.UniEvents.Where(x => x.Participants.Any(y=>y.Id == userId)).ToArrayAsync();
+            return events;
+        }
     }
 }
