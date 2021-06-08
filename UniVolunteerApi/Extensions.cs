@@ -9,13 +9,17 @@ using UniVolunteerDbModel.Model;
 
 namespace UniVolunteerApi
 {
+    /// <summary>
+    /// Класс для различного рода расширений над объектами системы и прочих полезных функций.
+    /// </summary>
     public static class Extensions
     {
+
         /// <summary>
-        /// Прозводит перевод указанного события в сущность переноса данных объекта (DTO)
+        /// Извлекает мероприятие из объекта создания.
         /// </summary>
-        /// <param name="source">Исходный объект, который необходимо переконвертировать.</param>
-        /// <returns>Объект переноса данных события вуза. (DTO)</returns>
+        /// <param name="source">Объект, содержащий в себе данные, необходимые для создания мероприятия.</param>
+        /// <returns>Извлеченное мероприятие</returns>
         public static UniEvent ConvertToUniEvent(this CreateUniEventDto source)
         {
             if (source == null) return null;
@@ -27,6 +31,11 @@ namespace UniVolunteerApi
             };
         }
 
+        /// <summary>
+        /// Прозводит перевод указанного события в сущность переноса данных объекта (DTO)
+        /// </summary>
+        /// <param name="source">Исходный объект, который необходимо переконвертировать.</param>
+        /// <returns>Объект переноса данных события вуза. (DTO)</returns>
         public static UniEventDto ConvertToUniEventDto(this UniEvent source)
         {
             if (source == null) return null;
