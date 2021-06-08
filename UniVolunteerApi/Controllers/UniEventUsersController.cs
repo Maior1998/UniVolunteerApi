@@ -8,8 +8,9 @@ using Microsoft.AspNetCore.Mvc;
 
 using UniVolunteerApi.DTOs.Requests;
 using UniVolunteerApi.DTOs.Responses;
+using UniVolunteerApi.Model.DTOs.Requests;
 using UniVolunteerApi.Repositories;
-
+using UniVolunteerApi.Services;
 using UniVolunteerDbModel.Model;
 
 namespace UniVolunteerApi.Controllers
@@ -26,15 +27,17 @@ namespace UniVolunteerApi.Controllers
         /// Репозиторий данных, которым будет пользоваться данный контроллер
         /// </summary>
         private readonly IUniRepository repository;
+        private readonly IUniVolunteerSession session;
 
         /// <summary>
         /// Инициализирует новый экземпляр контроллера пользователей
         /// при помощи указанного репозитория данных.
         /// </summary>
         /// <param name="repository">Репозиторий данных, который будет использоваться данным контроллером для доступа к данным.</param>
-        public UniEventUsersController(IUniRepository repository)
+        public UniEventUsersController(IUniRepository repository, IUniVolunteerSession session)
         {
             this.repository = repository;
+            this.session = session;
         }
 
 
@@ -50,6 +53,22 @@ namespace UniVolunteerApi.Controllers
             if (user == null)
                 return NotFound();
             return Ok(user.ConvertToUserDto());
+        }
+
+        [HttpPost]
+        public async Task<ActionResult> SetRoleToUser([FromBody] SetRoleToUserRequest request)
+        {
+
+            User user = await repository.GetUserAsync(request.UserId);
+            if (user == null)
+                return NotFound();
+            UserRole role = await repository.GetUserRoleAsync(request.RoleId);
+            if (role == null)
+                return NotFound();
+
+
+            return NoContent();
+
         }
     }
 }

@@ -26,11 +26,13 @@
   <ItemGroup>
     <Folder Include="Model\" />
     <Folder Include="Model\DTOs\" />
+    <Folder Include="Services\" />
   </ItemGroup>
 
   <ItemGroup>
     <None Remove="Model\" />
     <None Remove="Model\DTOs\" />
     <None Remove="Microsoft.AspNetCore.Session" />
+    <None Remove="Services\" />
   </ItemGroup>
 </Project>

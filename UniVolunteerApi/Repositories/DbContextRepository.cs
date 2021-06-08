@@ -159,5 +159,60 @@ namespace UniVolunteerApi.Repositories
             IEnumerable<UniEvent> events = await context.UniEvents.Where(x => x.Participants.Any(y=>y.Id == userId)).ToArrayAsync();
             return events;
         }
+
+        public Task<UserRole> CreateUserRole(UserRole role)
+        {
+            throw new NotImplementedException();
+        }
+
+        public Task DeleteUserRole(Guid id)
+        {
+            throw new NotImplementedException();
+        }
+
+        public Task UpdateUserRole(UserRole role)
+        {
+            throw new NotImplementedException();
+        }
+
+        public Task<UserRole> GetUserRole(Guid id)
+        {
+            throw new NotImplementedException();
+        }
+
+        public Task<UserRole[]> GetUserRoles()
+        {
+            throw new NotImplementedException();
+        }
+
+        public Task SetUserRole(Guid userId, Guid roleId)
+        {
+            throw new NotImplementedException();
+        }
+
+        public Task EnsureUserNotInRole(Guid userId, Guid roleId)
+        {
+            throw new NotImplementedException();
+        }
+
+        public Task SetRoleAccesses(Guid roleId, SecurityAccess newAccess)
+        {
+            throw new NotImplementedException();
+        }
+
+        public Task EnsureRoleHaveAccess(Guid roleId, SecurityAccess access)
+        {
+            throw new NotImplementedException();
+        }
+
+        public Task EnsureRoleNotHaveAccess(Guid roleId, SecurityAccess access)
+        {
+            throw new NotImplementedException();
+        }
+
+        public Task<UserRole> GetUserRoleAsync(Guid id)
+        {
+            throw new NotImplementedException();
+        }
     }
 }

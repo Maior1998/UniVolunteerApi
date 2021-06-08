@@ -19,12 +19,6 @@ namespace UniVolunteerDbModel
                 .UsingEntity(entBuilder => entBuilder.ToTable($"{nameof(User)}_{nameof(UniEvent)}"));
 
             modelBuilder
-                .Entity<UserRole>()
-                .HasMany(x => x.CanAccessObjects)
-                .WithMany(x => x.RolesWithAccess)
-                .UsingEntity(entBuilder => entBuilder.ToTable($"{nameof(UserRole)}_{nameof(SecurityObject)}"));
-
-            modelBuilder
                 .Entity<User>()
                 .HasMany(x => x.CreatedUniEvents)
                 .WithOne(x => x.CreatedBy)

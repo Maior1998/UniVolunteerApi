@@ -9,7 +9,7 @@ using System.Threading.Tasks;
 using UniVolunteerApi.DTOs.Requests;
 using UniVolunteerApi.DTOs.Responses;
 using UniVolunteerApi.Repositories;
-
+using UniVolunteerApi.Services;
 using UniVolunteerDbModel.Model;
 
 namespace UniVolunteerApi.Controllers
@@ -26,13 +26,15 @@ namespace UniVolunteerApi.Controllers
         /// Репозиторий, который будет использоваться данным контроллером для работы с данными.
         /// </summary>
         private readonly IUniRepository repository;
+        private readonly IUniVolunteerSession session;
         /// <summary>
         /// Инициализирует новый контроллер при помощи указанного репозитория.
         /// </summary>
         /// <param name="repository">Репозиторий, который будет использоваться для доступа к данным.</param>
-        public UniEventsController(IUniRepository repository)
+        public UniEventsController(IUniRepository repository, IUniVolunteerSession session)
         {
             this.repository = repository;
+            this.session = session;
         }
 
         /// <summary>
@@ -59,11 +61,7 @@ namespace UniVolunteerApi.Controllers
             return Ok(uniEvent.ConvertToUniEventDto());
         }
 
-        /// <summary>
-        /// Id пользователя, выполнившего обращение к данному контроллеру.
-        /// </summary>
-        private Guid CurrentUserId => Guid.Parse(User.Claims.Single(x => x.Type == "Id").Value);
-
+        
         /// <summary>
         /// Создает новое университетское мероприятие.
         /// </summary>
@@ -73,7 +71,7 @@ namespace UniVolunteerApi.Controllers
         public ActionResult<UniEventDto> CreateUniEvent(CreateUniEventDto source)
         {
             UniEvent addingEvent = source.ConvertToUniEvent();
-            addingEvent.CreatedById = addingEvent.ModifiedById = CurrentUserId;
+            addingEvent.CreatedById = addingEvent.ModifiedById = session.CurrentSessionUser.Id;
             addingEvent.Id = Guid.NewGuid();
             addingEvent.CreatedOn = addingEvent.ModifiedOn = DateTime.Now;
             UniEvent createdEvent = repository.CreateUniEvent(addingEvent);
@@ -102,8 +100,8 @@ namespace UniVolunteerApi.Controllers
                 Place = source.Place,
                 StartTime = source.StartTime,
                 ModifiedOn = DateTime.Now,
-                ModifiedById = CurrentUserId
-            };
+                ModifiedById = session.CurrentSessionUser.Id
+        };
             repository.UpdateUniEvent(uniEvent);
             return NoContent();
         }
@@ -119,7 +117,7 @@ namespace UniVolunteerApi.Controllers
             UniEvent deletingUniEvent = repository.GetEvent(id);
             if (deletingUniEvent == null)
                 return NotFound();
-            if (deletingUniEvent.CreatedById != CurrentUserId)
+            if (deletingUniEvent.CreatedById != session.CurrentSessionUser.Id)
                 return Forbid();
             repository.DeleteUniEvent(deletingUniEvent.Id);
             return NoContent();
