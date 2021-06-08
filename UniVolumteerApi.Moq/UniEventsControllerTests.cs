@@ -11,6 +11,9 @@ using Moq;
 using System.Collections.Generic;
 using Microsoft.AspNetCore.Mvc;
 using System.Collections;
+using System.Linq;
+using System.Threading.Tasks;
+using System.Net;
 
 namespace UniVolunteerApi.Moq
 {
@@ -42,11 +45,12 @@ namespace UniVolunteerApi.Moq
 
             //Act
             ActionResult<UniEventDto> eventResult = _uniEvents.GetUniEvent(guid);
+            object buf = ((OkObjectResult)eventResult.Result).Value;
 
             //Assert
             Assert.NotNull(eventResult);
-            Assert.Equal(guid, eventResult.Value.Id);
-            Assert.Equal(name, eventResult.Value.Name);
+            Assert.Equal(guid, ((UniEventDto)((OkObjectResult)eventResult.Result).Value).Id);
+            Assert.Equal(name, ((UniEventDto)((OkObjectResult)eventResult.Result).Value).Name);
         }
         [Fact]
         public void GetEventByIdTest_InvalidEvent()
@@ -60,6 +64,7 @@ namespace UniVolunteerApi.Moq
 
             //Assert
             Assert.Null(eventResult.Value);
+            Assert.Equal(404, ((NotFoundResult)eventResult.Result).StatusCode);
         }
 
         [Fact]
@@ -77,8 +82,11 @@ namespace UniVolunteerApi.Moq
 
             //Act
             ActionResult<IEnumerable<UniEventDto>> eventResult = _uniEvents.GetUniEvents();
+
             //Assert
             Assert.NotNull(((OkObjectResult)eventResult.Result).Value);
+            Assert.Equal(guid1, ((IEnumerable)(((OkObjectResult)eventResult.Result).Value)).Cast<UniEventDto>().ToArray()[0].Id);
+            Assert.Equal(guid2, ((IEnumerable)(((OkObjectResult)eventResult.Result).Value)).Cast<UniEventDto>().ToArray()[1].Id);
         }
 
         [Fact]
@@ -88,19 +96,20 @@ namespace UniVolunteerApi.Moq
             string nameNewEvent = "";
             string placeNewEvent = "";
             DateTime startTimeNewEvent = new DateTime(2021, 7, 9);
-            CreateUniEventDto eventDto = new CreateUniEventDto() { Name = nameNewEvent, Place = placeNewEvent, StartTime = startTimeNewEvent };
-            //UniEvent newEvent = new UniEvent() { Name = nameNewEvent, Place = placeNewEvent, StartTime = startTimeNewEvent };
-            
-            _repository.Setup(x => x.CreateUniEvent(eventDto.ConvertToUniEvent())).Returns(eventDto.ConvertToUniEvent());
+            var guid = Guid.NewGuid();
+
+            UniEvent newEvent = new UniEvent() { Name = nameNewEvent, Place = placeNewEvent, StartTime = startTimeNewEvent, CreatedById = guid };
+
+            _repository.Setup(x => x.CreateUniEvent(newEvent)).Returns(newEvent);
 
 
             //Act
-            ActionResult<UniEventDto> buf = _uniEvents.CreateUniEvent(eventDto);
+            ActionResult<UniEventDto> createEvent = _uniEvents.CreateUniEvent(new CreateUniEventDto() { Name = nameNewEvent, Place = placeNewEvent, StartTime = startTimeNewEvent });
 
             //Assert
-            //Assert.Equal(newEvent, buf.Result.Value);
-            //Assert.NotNull(buf.Result.ActionName);
+            Assert.Equal(newEvent, ((OkObjectResult)createEvent.Result).Value);
 
         }
+
     }
 }

@@ -26,13 +26,19 @@ namespace UniVolunteerApi.Moq
         [Fact]
         public async Task GetUserTest()
         {
+            //Arange
             string name = "";
             Guid guid = Guid.NewGuid();
             User userDto = new User() { FullName = name, Id = guid };
 
-            //_repository.Setup(x => x.GetUserAsync(guid)).Returns(userDto);
+            _repository.Setup(x => x.GetUserAsync(guid)).ReturnsAsync(userDto);
 
+            //Act
             ActionResult<UserDto> user = await _usersController.GetUser(guid);
+
+            //Assert
+            Assert.NotNull(((OkObjectResult)user.Result).Value);
+            Assert.Equal(guid, ((UserDto)((OkObjectResult)user.Result).Value).Id);
         }
     }
 }

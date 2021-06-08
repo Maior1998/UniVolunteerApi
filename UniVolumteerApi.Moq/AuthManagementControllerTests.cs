@@ -12,31 +12,39 @@ using UniVolunteerApi.Configuration;
 using UniVolunteerApi.DTOs.Requests;
 using Moq;
 using Xunit;
+using UniVolunteerDbModel.Model;
 
 namespace UniVolunteerApi.Moq
 {
     public class AuthManagementControllerTests
     {
-        private readonly AuthManagementController _sut;
+        private readonly AuthManagementController _authManamentController;
         private readonly Mock<IUniRepository> _repository = new Mock<IUniRepository>();
-        private readonly JwtConfig jwtConfig; 
-        private readonly TokenValidationParameters tokenValidationParameters;
+        private readonly JwtConfig jwtConfig = new JwtConfig();
+        private readonly TokenValidationParameters tokenValidationParameters = new TokenValidationParameters();
 
         public AuthManagementControllerTests()
         {
-            //_sut = new AuthManagementController(_repository.Object, jwtConfig, tokenValidationParameters);
+            _authManamentController = new AuthManagementController(_repository.Object, (IOptionsMonitor<JwtConfig>)jwtConfig, tokenValidationParameters);
         }
 
         [Fact]
-        public async Task<ActionResult> RegisterTest()
+        public async Task RegisterTest()
         {
+            //Arange
             var guid = Guid.NewGuid();
-            var userDto = new UserRegistrationDto() {FullName = "", Login = "", Password = ""};
-            var buf = _sut.Register(userDto);
-            //var repo = _repository.Setup(x => x.GetUserAsync())
+            var fullNameUser = "full name";
+            var loginUser = "login";
+            var user = new User() {Id = guid, FullName = fullNameUser, Login = loginUser};
 
-            
-            return null;
+            _repository.Setup(x => x.GetUserAsync(guid)).ReturnsAsync(user);
+
+            //Act
+            var userRegistration = new UserRegistrationDto() { FullName = fullNameUser, Login = loginUser};
+            var buf = _authManamentController.Register(userRegistration);
+
+            //Assert
+            Assert.NotNull(buf.Result);
         }
     }
 }
