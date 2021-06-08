@@ -13,7 +13,7 @@ using UniVolunteerApi.DTOs.Requests;
 using Moq;
 using Xunit;
 
-namespace UniVolumteerApi.Moq
+namespace UniVolunteerApi.Moq
 {
     public class AuthManagementControllerTests
     {
