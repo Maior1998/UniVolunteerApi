@@ -42,7 +42,7 @@ namespace UniVolunteerApi.Controllers
         [HttpGet]
         public async Task<ActionResult<UniEventDto[]>> GetEnrolledInEvents()
         {
-            IEnumerable<UniEvent> events = await repository.GetUserParticipatedInEvents(CurrentUserId);
+            IEnumerable<UniEvent> events = await repository.GetUserParticipatedInEvents(session.CurrentSessionUser.Id);
             return Ok(events.Select(x => x.ConvertToUniEventDto()).ToArray());
         }
 
@@ -58,7 +58,7 @@ namespace UniVolunteerApi.Controllers
             UniEvent deletingUniEvent = repository.GetEvent(id);
             if (deletingUniEvent == null)
                 return NotFound();
-            await repository.EnsureUserEnrolledToEvent(CurrentUserId, deletingUniEvent.Id);
+            await repository.EnsureUserEnrolledToEvent(session.CurrentSessionUser.Id, deletingUniEvent.Id);
             return NoContent();
         }
 
@@ -73,7 +73,7 @@ namespace UniVolunteerApi.Controllers
             UniEvent deletingUniEvent = repository.GetEvent(id);
             if (deletingUniEvent == null)
                 return NotFound();
-            await repository.EnsureUserExitedFromEvent(CurrentUserId, deletingUniEvent.Id);
+            await repository.EnsureUserExitedFromEvent(session.CurrentSessionUser.Id, deletingUniEvent.Id);
             return NoContent();
         }
     }
