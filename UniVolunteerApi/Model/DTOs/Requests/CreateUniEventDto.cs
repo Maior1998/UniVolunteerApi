@@ -12,6 +12,7 @@ namespace UniVolunteerApi.DTOs.Requests
     {
         [Required]
         public string Name { get; set; }
+        [Required]
         public string Place { get; set; }
         [Required]
         public DateTime StartTime { get; set; }

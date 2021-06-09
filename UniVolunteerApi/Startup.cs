@@ -21,6 +21,7 @@ using UniVolunteerApi.Repositories;
 using UniVolunteerDbModel;
 using UniVolunteerDbModel.Model;
 using Microsoft.AspNetCore.Http;
+using UniVolunteerApi.Services;
 
 namespace UniVolunteerApi
 {
@@ -38,13 +39,14 @@ namespace UniVolunteerApi
         {
             services.Configure<JwtConfig>(Configuration.GetSection(nameof(JwtConfig)));
 
+
             services.AddSingleton<IUniRepository, DbContextRepository>();
             services.AddSingleton<UniEventsController>();
             services.AddSingleton<UniEventUsersController>();
             services.AddSingleton<AuthManagementController>();
-            services.AddDbContext<UniVolunteerContext>();
-
-
+            services.AddTransient<UniVolunteerContext>();
+            services.AddHttpContextAccessor();
+            services.AddSingleton<IUniVolunteerSession, UniVolunteerSession>();
             byte[] key = Encoding.ASCII.GetBytes(Configuration[$"{nameof(JwtConfig)}:{nameof(JwtConfig.Secret)}"]);
             TokenValidationParameters tokenValidationParams = new TokenValidationParameters()
             {
@@ -71,7 +73,7 @@ namespace UniVolunteerApi
             services.AddDefaultIdentity<IdentityUser>(options => options.SignIn.RequireConfirmedAccount = true)
                 .AddEntityFrameworkStores<UniVolunteerContext>();
 
-            
+
             services
                 .AddControllers()
                 .AddNewtonsoftJson();

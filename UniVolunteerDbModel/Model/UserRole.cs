@@ -29,6 +29,6 @@ namespace UniVolunteerDbModel.Model
         /// </summary>
         public ICollection<User> UsersInRole { get; set; } = new List<User>();
 
-        public ICollection<SecurityObject> CanAccessObjects { get; set; } = new List<SecurityObject>();
+        public SecurityAccess Access { get; set; }
     }
 }
