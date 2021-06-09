@@ -105,11 +105,8 @@ namespace UniVolunteerApi.Moq
 
             //UniEvent newEvent = new UniEvent() {Id=eventId, Name = nameNewEvent, Place = placeNewEvent, StartTime = startTimeNewEvent};
             CreateUniEventDto createUniEventDto = new CreateUniEventDto() { Name = nameNewEvent, Place = placeNewEvent, StartTime = startTimeNewEvent };
-            UniEvent buf = createUniEventDto.ConvertToUniEvent();
             
-            buf.Id = Guid.NewGuid();
-            buf.CreatedOn = buf.ModifiedOn = DateTime.Now;
-            _repository.Setup(x => x.CreateUniEvent(buf)).Returns(buf);
+            _repository.Setup(x => x.CreateUniEvent(It.IsAny<UniEvent>())).Returns(createUniEventDto.ConvertToUniEvent());
 
 
             //Act

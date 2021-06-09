@@ -20,12 +20,12 @@ namespace UniVolunteerApi.Moq
     {
         private readonly AuthManagementController _authManamentController;
         private readonly Mock<IUniRepository> _repository = new Mock<IUniRepository>();
-        private readonly JwtConfig jwtConfig = new JwtConfig();
+        private readonly TestOptionsMonitor<JwtConfig> testOptionsMonitor = new TestOptionsMonitor<JwtConfig>(new JwtConfig() { Secret = "12345678901234567890123456789012" });
         private readonly TokenValidationParameters tokenValidationParameters = new TokenValidationParameters();
 
         public AuthManagementControllerTests()
         {
-            _authManamentController = new AuthManagementController(_repository.Object, (IOptionsMonitor<JwtConfig>)jwtConfig, tokenValidationParameters);
+            _authManamentController = new AuthManagementController(_repository.Object, testOptionsMonitor, tokenValidationParameters);
         }
 
         [Fact]
@@ -35,13 +35,15 @@ namespace UniVolunteerApi.Moq
             var guid = Guid.NewGuid();
             var fullNameUser = "full name";
             var loginUser = "login";
+            var passwordUser = "password";
             var user = new User() {Id = guid, FullName = fullNameUser, Login = loginUser};
 
             _repository.Setup(x => x.GetUserAsync(guid)).ReturnsAsync(user);
+            _repository.Setup(x => x.CreateUserAsync(user)).ReturnsAsync(user);
 
             //Act
-            var userRegistration = new UserRegistrationDto() { FullName = fullNameUser, Login = loginUser};
-            var buf = _authManamentController.Register(userRegistration);
+            var userRegistration = new UserRegistrationDto() { FullName = fullNameUser, Login = loginUser, Password = passwordUser};
+            var buf = _authManamentController.Register(userRegistration); // создает нового пользователя
 
             //Assert
             Assert.NotNull(buf.Result);
