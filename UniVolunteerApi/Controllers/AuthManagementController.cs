@@ -281,7 +281,7 @@ namespace UniVolunteerApi.Controllers
                     };
 
                 //Проверка существования токена в базе
-                var storedToken = await repository.GetRefreshTokenAsync(tokenRequest.RefreshToken);
+                RefreshToken storedToken = await repository.GetRefreshTokenAsync(tokenRequest.RefreshToken);
                 if (storedToken != null)
                     return new AuthResult()
                     {

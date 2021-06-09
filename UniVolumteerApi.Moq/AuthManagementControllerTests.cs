@@ -20,31 +20,60 @@ namespace UniVolunteerApi.Moq
     {
         private readonly AuthManagementController _authManamentController;
         private readonly Mock<IUniRepository> _repository = new Mock<IUniRepository>();
-        private readonly JwtConfig jwtConfig = new JwtConfig();
+        private readonly TestOptionsMonitor<JwtConfig> testOptionsMonitor = new TestOptionsMonitor<JwtConfig>(new JwtConfig() { Secret = "12345678901234567890123456789012" });
         private readonly TokenValidationParameters tokenValidationParameters = new TokenValidationParameters();
 
         public AuthManagementControllerTests()
         {
-            _authManamentController = new AuthManagementController(_repository.Object, (IOptionsMonitor<JwtConfig>)jwtConfig, tokenValidationParameters);
+            _authManamentController = new AuthManagementController(_repository.Object, testOptionsMonitor, tokenValidationParameters);
         }
 
         [Fact]
         public async Task RegisterTest()
         {
             //Arange
-            var guid = Guid.NewGuid();
-            var fullNameUser = "full name";
-            var loginUser = "login";
-            var user = new User() {Id = guid, FullName = fullNameUser, Login = loginUser};
+            Guid guid = Guid.NewGuid();
+            string fullNameUser = "full name";
+            string loginUser = "login";
+            string passwordUser = "password";
+            User user = new User() {Id = guid, FullName = fullNameUser, Login = loginUser};
 
             _repository.Setup(x => x.GetUserAsync(guid)).ReturnsAsync(user);
+            _repository.Setup(x => x.CreateUserAsync(It.IsAny<User>())).ReturnsAsync(user);
 
             //Act
-            var userRegistration = new UserRegistrationDto() { FullName = fullNameUser, Login = loginUser};
-            var buf = _authManamentController.Register(userRegistration);
+            UserRegistrationDto userRegistration = new UserRegistrationDto() { FullName = fullNameUser, Login = loginUser, Password = passwordUser};
+            ActionResult<AuthResult> register = await _authManamentController.Register(userRegistration); // создает нового пользователя
 
             //Assert
-            Assert.NotNull(buf.Result);
+            Assert.NotNull(register.Result);
+            Assert.True(((AuthResult)((OkObjectResult)register.Result).Value).Success);
         }
+
+        [Fact]
+        public async Task LoginTest()
+        {
+            //Arange
+            var loginUser = "login";
+            var passwordUser = "password";
+            var userId = Guid.NewGuid();
+            LoginRequest loginRequest = new LoginRequest() { Login = loginUser, Password = passwordUser };
+            string salt = SaltHelper.GenerateSalt();
+            string hash = SaltHelper.GetHash(passwordUser, salt);
+
+            User user = new User() { Login = loginUser, Id = userId, PasswordHash=hash, Salt=salt};
+            
+
+            _repository.Setup(x => x.GetUserAsync(loginUser)).ReturnsAsync(user);
+
+            //Act
+            ActionResult login = await _authManamentController.Login(loginRequest);
+
+            //Assert
+            Assert.NotNull(login);
+            Assert.IsType<OkObjectResult>(login);
+        }
+
+       
     }
 }
