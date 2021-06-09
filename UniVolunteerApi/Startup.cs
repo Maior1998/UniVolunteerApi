@@ -1,4 +1,4 @@
-using Microsoft.AspNetCore.Builder;
+﻿using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Configuration;
@@ -21,6 +21,9 @@ using UniVolunteerApi.Repositories;
 using UniVolunteerDbModel;
 using UniVolunteerDbModel.Model;
 using Microsoft.AspNetCore.Http;
+using UniVolunteerApi.Services;
+using System.Reflection;
+using System.IO;
 
 namespace UniVolunteerApi
 {
@@ -30,7 +33,6 @@ namespace UniVolunteerApi
         {
             Configuration = configuration;
         }
-
         public IConfiguration Configuration { get; }
 
         // This method gets called by the runtime. Use this method to add services to the container.
@@ -38,13 +40,14 @@ namespace UniVolunteerApi
         {
             services.Configure<JwtConfig>(Configuration.GetSection(nameof(JwtConfig)));
 
+
             services.AddSingleton<IUniRepository, DbContextRepository>();
             services.AddSingleton<UniEventsController>();
             services.AddSingleton<UniEventUsersController>();
             services.AddSingleton<AuthManagementController>();
-            services.AddDbContext<UniVolunteerContext>();
-
-
+            services.AddTransient<UniVolunteerContext>();
+            services.AddHttpContextAccessor();
+            services.AddSingleton<IUniVolunteerSession, UniVolunteerSession>();
             byte[] key = Encoding.ASCII.GetBytes(Configuration[$"{nameof(JwtConfig)}:{nameof(JwtConfig.Secret)}"]);
             TokenValidationParameters tokenValidationParams = new TokenValidationParameters()
             {
@@ -71,14 +74,40 @@ namespace UniVolunteerApi
             services.AddDefaultIdentity<IdentityUser>(options => options.SignIn.RequireConfirmedAccount = true)
                 .AddEntityFrameworkStores<UniVolunteerContext>();
 
-            
+
             services
                 .AddControllers()
                 .AddNewtonsoftJson();
 
             services.AddSwaggerGen(c =>
             {
+                var xmlFile = $"{Assembly.GetExecutingAssembly().GetName().Name}.xml";
+                var xmlPath = Path.Combine(AppContext.BaseDirectory, xmlFile);
+                c.IncludeXmlComments(xmlPath);
                 c.SwaggerDoc("v1", new() { Title = "UniVolunteerApi", Version = "v1" });
+                c.AddSecurityDefinition("Bearer", new OpenApiSecurityScheme
+                {
+                    Type = SecuritySchemeType.Http,
+                    BearerFormat = "JWT",
+                    In = ParameterLocation.Header,
+                    Scheme = "bearer",
+                    Description = "Предоставьте JWT токен"
+                });
+
+                c.AddSecurityRequirement(new OpenApiSecurityRequirement
+                {
+                    {
+                        new OpenApiSecurityScheme
+                        {
+                            Reference = new OpenApiReference
+                            {
+                                Type = ReferenceType.SecurityScheme,
+                                Id = "Bearer"
+                            }
+                        },
+                        Array.Empty<string>()
+                    }
+                });
             });
         }
 

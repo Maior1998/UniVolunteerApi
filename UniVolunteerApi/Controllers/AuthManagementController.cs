@@ -5,7 +5,7 @@ using System.Linq;
 using System.Security.Claims;
 using System.Text;
 using System.Threading.Tasks;
-
+using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Options;
@@ -20,14 +20,32 @@ using UniVolunteerDbModel.Model;
 
 namespace UniVolunteerApi.Controllers
 {
+    /// <summary>
+    /// Контроллер, отвечающий за регистрацию, авторизацию, и обновление JWToken'ов пользователей.
+    /// </summary>
     [Route("api/[controller]")]
     [ApiController]
     public class AuthManagementController : ControllerBase
     {
+        /// <summary>
+        /// Репозиторий, который используется данных контроллером. Заполнятся Service Controller'ом
+        /// </summary>
         private readonly IUniRepository repository;
+        /// <summary>
+        /// Настройки обработки JWToken'ов. Заполнятся Service Controller'ом
+        /// </summary>
         private readonly JwtConfig jwtConfig;
+        /// <summary>
+        /// Параметры валиадации токена JWT, необходимые для генерации новых токенов. Заполнятся Service Controller'ом
+        /// </summary>
         private readonly TokenValidationParameters tokenValidationParameters;
 
+        /// <summary>
+        /// Инициализирует новый контроллер управления пользователями.
+        /// </summary>
+        /// <param name="repository">Объект, реализующий <see cref="IUniRepository"/>, который будет использоваться для доступа к данным.</param>
+        /// <param name="optionsMonitor">Монитор настроек <see cref="JwtConfig"/>.</param>
+        /// <param name="tokenValidationParameters">Параметры валидации токена JWT, которые будут использоваться при создании новых токенов JWT.</param>
         public AuthManagementController(
             IUniRepository repository
             , IOptionsMonitor<JwtConfig> optionsMonitor,
@@ -38,9 +56,16 @@ namespace UniVolunteerApi.Controllers
             this.repository = repository;
         }
 
+        /// <summary>
+        /// Метод регистрации нового пользователя.
+        /// </summary>
+        /// <param name="registeringUser">Объект, содержащий данные, необходимые для регистрации новго пользователя.</param>
+        /// <returns><see cref="OkObjectResult"/> с токеном JWT и токеном обновления, если все прошло успешно, иначе <see cref="BadRequestObjectResult"/> с указанием ошибки.</returns>
         [HttpPost]
         [Route("Register")]
-        public async Task<ActionResult> Register([FromBody] UserRegistrationDto registeringUser)
+        [ProducesResponseType(StatusCodes.Status200OK)]
+        [ProducesResponseType(StatusCodes.Status400BadRequest)]
+        public async Task<ActionResult<AuthResult>> Register([FromBody] UserRegistrationDto registeringUser)
         {
             if (ModelState.IsValid)
             {
@@ -67,8 +92,8 @@ namespace UniVolunteerApi.Controllers
                     PasswordHash = passHash,
                     RegisteredOn = DateTime.Now
                 };
-                User isCreated = await repository.CreateUserAsync(newUser);
-                if (isCreated != null)
+                User createdUser = await repository.CreateUserAsync(newUser);
+                if (createdUser != null)
                 {
                     AuthResult jwt = await GenerateJwt(newUser);
                     return Ok(jwt);
@@ -96,6 +121,12 @@ namespace UniVolunteerApi.Controllers
 
         }
 
+
+        /// <summary>
+        /// Метод авторизации пользователя по его логину и паролю.
+        /// </summary>
+        /// <param name="loginRequest">Объект, содержащий в себе данные, необходимые для авторизации пользователя в системе.</param>
+        /// <returns><see cref="OkObjectResult"/> с токеном JWT и токеном обновления, если все прошло успешно, иначе <see cref="BadRequestObjectResult"/> с указанием ошибки.</returns>
         [HttpPost]
         [Route("Login")]
         public async Task<ActionResult> Login([FromBody] LoginRequest loginRequest)
@@ -133,6 +164,12 @@ namespace UniVolunteerApi.Controllers
 
         }
 
+
+        /// <summary>
+        /// Производит генерацию и сохранение нового токена для пользователя.
+        /// </summary>
+        /// <param name="user">Пользователь, для которого необходимо сгенрировать пару "токен + токен обновления"</param>
+        /// <returns>Результат генерации токена.</returns>
         private async Task<AuthResult> GenerateJwt(User user)
         {
             JwtSecurityTokenHandler jwtTokenHandler = new JwtSecurityTokenHandler();
@@ -175,6 +212,11 @@ namespace UniVolunteerApi.Controllers
             };
         }
 
+        /// <summary>
+        /// Производит обновление токена пользователя при помощи пары "токен + токен обновления"
+        /// </summary>
+        /// <param name="tokenRequest">Объект запроса нового токена, содержащий в себе необходимые данные для валидации имеющихся у пользователя на руках данных.</param>
+        /// <returns>Результат валидации и токены, если первая прошла успешно.</returns>
         [HttpPost]
         [Route("RefreshToken")]
         public async Task<ActionResult> RefreshToken([FromBody] TokenRequest tokenRequest)
@@ -198,7 +240,11 @@ namespace UniVolunteerApi.Controllers
             return Ok(verificationResult);
         }
 
-
+        /// <summary>
+        /// Производит проверку и генерацию нового токена для пользователя.
+        /// </summary>
+        /// <param name="tokenRequest">Запрос на токен со стороны пользователя.</param>
+        /// <returns>Результат проверки и генерации токена.</returns>
         private async Task<AuthResult> VerifyAndGenerateToken(TokenRequest tokenRequest)
         {
             JwtSecurityTokenHandler jwtTokenHandler = new();
@@ -286,6 +332,11 @@ namespace UniVolunteerApi.Controllers
             }
         }
 
+        /// <summary>
+        /// Переводит время из числового Unix формата в <see cref="DateTime"/>.
+        /// </summary>
+        /// <param name="unixTimeStamp">Временной отпечаток в виде числа.</param>
+        /// <returns>Объект <see cref="DateTime"/>, соответствующий параметру-отпечатку.</returns>
         private static DateTime UnixTimeStampToDateTime(long unixTimeStamp)
         {
             DateTime dateTimeVal = new(1970, 1, 1, 0, 0, 0, 0, DateTimeKind.Utc);

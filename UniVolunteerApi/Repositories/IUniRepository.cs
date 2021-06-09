@@ -35,6 +35,43 @@ namespace UniVolunteerApi.Repositories
         Task<IEnumerable<UniEvent>> GetUserParticipatedInEvents(Guid userId);
         #endregion
 
+        /// <summary>
+        /// Создание роли.
+        /// </summary>
+        Task<UserRole> CreateUserRole(UserRole role);
+        /// <summary>
+        /// Удаление роли.
+        /// </summary>
+        Task DeleteUserRole(Guid id);
+        /// <summary>
+        /// Обновление (замена) данных роли.
+        /// </summary>
+        Task UpdateUserRole(UserRole role);
+        /// <summary>
+        /// Получает роль по ее Id (или возвращает null если роль не найдена).
+        /// </summary>
+        Task<UserRole> GetUserRoleAsync(Guid id);
+        /// <summary>
+        /// Получает все роли пользователей в системе.
+        /// </summary>
+        Task<UserRole[]> GetUserRoles();
+        /// <summary>
+        /// Выдает пользователю роль, если тот еще в ней не состоит.
+        /// </summary>
+        Task SetUserRole(Guid userId, Guid roleId);
+        /// <summary>
+        /// Заменяет (обновляет) список прав у роли.
+        /// </summary>
+        Task SetRoleAccesses(Guid roleId, SecurityAccess newAccess);
+        /// <summary>
+        /// Приписывает роли указанный набор прав, если у нее их еще нет.
+        /// </summary>
+        Task EnsureRoleHaveAccess(Guid roleId, SecurityAccess access);
+        /// <summary>
+        /// Отзывает права у роли, если они у нее есть.
+        /// </summary>
+        Task EnsureRoleNotHaveAccess(Guid roleId, SecurityAccess access);
+
         #region UniUsers
         Task<User[]> GetAllUsersAsync();
         Task<User> GetUserAsync(Guid id);
@@ -47,6 +84,8 @@ namespace UniVolunteerApi.Repositories
         Task AddRefreshTokenAsync(RefreshToken token);
         Task<RefreshToken> GetRefreshTokenAsync(string token);
         Task UpdateRefreshTokenAsync(RefreshToken token);
+
         
+
     }
 }
