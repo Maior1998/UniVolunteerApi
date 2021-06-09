@@ -11,6 +11,7 @@ using Microsoft.AspNetCore.Mvc;
 using UniVolunteerApi.DTOs.Responses;
 using Xunit;
 using UniVolunteerDbModel.Model;
+using UniVolunteerApi.Services;
 
 namespace UniVolunteerApi.Moq
 {
@@ -18,9 +19,10 @@ namespace UniVolunteerApi.Moq
     {
         private readonly UniEventUsersController _usersController;
         private readonly Mock<IUniRepository> _repository = new Mock<IUniRepository>();
+        private readonly Mock<IUniVolunteerSession> _session = new Mock<IUniVolunteerSession>();
         public UniEventUsersControllerTests()
         {
-            _usersController = new UniEventUsersController(_repository.Object);
+            _usersController = new UniEventUsersController(_repository.Object, _session.Object);
         }
 
         [Fact]

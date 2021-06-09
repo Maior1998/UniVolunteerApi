@@ -6,6 +6,7 @@ using UniVolunteerApi.Controllers;
 using UniVolunteerDbModel.Model;
 using UniVolunteerApi.DTOs.Responses;
 using UniVolunteerApi.DTOs.Requests;
+using UniVolunteerApi.Services;
 
 using Moq;
 using System.Collections.Generic;
@@ -21,10 +22,14 @@ namespace UniVolunteerApi.Moq
     {
         private readonly UniEventsController _uniEvents;
         private readonly Mock<IUniRepository> _repository = new Mock<IUniRepository>();
+        private readonly Mock<IUniVolunteerSession> _session = new Mock<IUniVolunteerSession>();
+        private readonly Guid sessionUserId = Guid.NewGuid();
 
         public UniEventsControllerTests()
         {
-            _uniEvents = new UniEventsController(_repository.Object);
+            _uniEvents = new UniEventsController(_repository.Object, _session.Object);
+            User currentSessionUser = new User() { Id = sessionUserId, FullName = "full name", Login = "login" };
+            _session.Setup(x => x.CurrentSessionUser).Returns(currentSessionUser);
         }
 
 
@@ -96,20 +101,65 @@ namespace UniVolunteerApi.Moq
             string nameNewEvent = "";
             string placeNewEvent = "";
             DateTime startTimeNewEvent = new DateTime(2021, 7, 9);
-            var guid = Guid.NewGuid();
+            Guid eventId = Guid.NewGuid();
 
-            UniEvent newEvent = new UniEvent() { Name = nameNewEvent, Place = placeNewEvent, StartTime = startTimeNewEvent, CreatedById = guid };
-
-            _repository.Setup(x => x.CreateUniEvent(newEvent)).Returns(newEvent);
+            //UniEvent newEvent = new UniEvent() {Id=eventId, Name = nameNewEvent, Place = placeNewEvent, StartTime = startTimeNewEvent};
+            CreateUniEventDto createUniEventDto = new CreateUniEventDto() { Name = nameNewEvent, Place = placeNewEvent, StartTime = startTimeNewEvent };
+            UniEvent buf = createUniEventDto.ConvertToUniEvent();
+            
+            buf.Id = Guid.NewGuid();
+            buf.CreatedOn = buf.ModifiedOn = DateTime.Now;
+            _repository.Setup(x => x.CreateUniEvent(buf)).Returns(buf);
 
 
             //Act
-            ActionResult<UniEventDto> createEvent = _uniEvents.CreateUniEvent(new CreateUniEventDto() { Name = nameNewEvent, Place = placeNewEvent, StartTime = startTimeNewEvent });
+            ActionResult<UniEventDto> createEvent = _uniEvents.CreateUniEvent(createUniEventDto);
 
             //Assert
-            Assert.Equal(newEvent, ((OkObjectResult)createEvent.Result).Value);
+            //Assert.Equal(newEvent, ((OkObjectResult)createEvent.Result).Value);
 
         }
 
+        [Fact]
+        public void UpdateUniEventTest()
+        {
+            //Arange
+            string nameNewEvent = "new event";
+            string placeNewEvent = "new place";
+            DateTime startTimeNewEvent = new DateTime(2021, 7, 9);
+            Guid eventId = Guid.NewGuid();
+
+            UniEvent uniEvent = new UniEvent() { Id = eventId, Name="old event" };
+            _repository.Setup(x => x.GetEvent(eventId)).Returns(uniEvent);
+
+
+            UpdateUniEventDto updateUniEventDto = new UpdateUniEventDto() { Name = nameNewEvent, Place = placeNewEvent, StartTime = startTimeNewEvent };
+
+            //Act
+            ActionResult<UniEventDto> updateEvent = _uniEvents.UpdateUniEvent(eventId, updateUniEventDto);
+
+            //Assert
+            Assert.Equal(204, ((NoContentResult)updateEvent.Result).StatusCode);
+        }
+
+        [Fact]
+        public void DeleteUniEventTest()
+        {
+            //Arange
+            string nameNewEvent = "event";
+            string placeNewEvent = "place";
+            DateTime startTimeNewEvent = new DateTime(2021, 7, 9);
+            Guid eventId = Guid.NewGuid();
+
+            UniEvent uniEvent = new UniEvent() { Id = eventId, Name = nameNewEvent, Place = placeNewEvent, StartTime = startTimeNewEvent, CreatedById = sessionUserId };
+            _repository.Setup(x => x.GetEvent(eventId)).Returns(uniEvent);
+
+
+            //Act
+            ActionResult deleteEvent = _uniEvents.DeleteUniEvent(eventId);
+
+            //Assert
+            Assert.Equal(204, ((NoContentResult)deleteEvent).StatusCode);
+        }
     }
 }
