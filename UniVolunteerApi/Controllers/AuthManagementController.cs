@@ -5,7 +5,7 @@ using System.Linq;
 using System.Security.Claims;
 using System.Text;
 using System.Threading.Tasks;
-
+using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Options;
@@ -63,7 +63,9 @@ namespace UniVolunteerApi.Controllers
         /// <returns><see cref="OkObjectResult"/> с токеном JWT и токеном обновления, если все прошло успешно, иначе <see cref="BadRequestObjectResult"/> с указанием ошибки.</returns>
         [HttpPost]
         [Route("Register")]
-        public async Task<ActionResult> Register([FromBody] UserRegistrationDto registeringUser)
+        [ProducesResponseType(StatusCodes.Status200OK)]
+        [ProducesResponseType(StatusCodes.Status400BadRequest)]
+        public async Task<ActionResult<AuthResult>> Register([FromBody] UserRegistrationDto registeringUser)
         {
             if (ModelState.IsValid)
             {

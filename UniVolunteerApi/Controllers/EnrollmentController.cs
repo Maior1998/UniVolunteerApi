@@ -8,6 +8,7 @@ using UniVolunteerApi.DTOs.Responses;
 using UniVolunteerApi.Repositories;
 using System.Collections.Generic;
 using UniVolunteerDbModel.Model;
+using UniVolunteerApi.Services;
 
 namespace UniVolunteerApi.Controllers
 {
@@ -20,21 +21,18 @@ namespace UniVolunteerApi.Controllers
     public class EnrollmentController : Controller
     {
         /// <summary>
-        /// Id текущего пользователя, вызвавшего данный контроллер
-        /// </summary>
-        private Guid CurrentUserId => Guid.Parse(User.Claims.Single(x => x.Type == "Id").Value);
-        /// <summary>
         /// Репозиторий, который используется данным контроллером для обращения к данным. Заполняется через Service Provider.
         /// </summary>
         private readonly IUniRepository repository;
-
+        private readonly IUniVolunteerSession session;
         /// <summary>
-        /// Инициализирует новый экземпляр данного контроллера при помощи объекта, реализующего <see cref="IUniRepository"/>.
+        /// Инициализирует новый контроллер при помощи указанного репозитория.
         /// </summary>
-        /// <param name="repository">Экземпляр репозитория, который будет использоваться данных котроллером.</param>
-        public EnrollmentController(IUniRepository repository)
+        /// <param name="repository">Репозиторий, который будет использоваться для доступа к данным.</param>
+        public EnrollmentController(IUniRepository repository, IUniVolunteerSession session)
         {
             this.repository = repository;
+            this.session = session;
         }
 
         /// <summary>

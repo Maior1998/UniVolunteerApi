@@ -22,6 +22,8 @@ using UniVolunteerDbModel;
 using UniVolunteerDbModel.Model;
 using Microsoft.AspNetCore.Http;
 using UniVolunteerApi.Services;
+using System.Reflection;
+using System.IO;
 
 namespace UniVolunteerApi
 {
@@ -31,7 +33,6 @@ namespace UniVolunteerApi
         {
             Configuration = configuration;
         }
-        private const string DocumentationFile = @"bin\Debug\net5.0\UniVolunteerApi.xml";
         public IConfiguration Configuration { get; }
 
         // This method gets called by the runtime. Use this method to add services to the container.
@@ -80,7 +81,9 @@ namespace UniVolunteerApi
 
             services.AddSwaggerGen(c =>
             {
-                c.IncludeXmlComments(DocumentationFile);
+                var xmlFile = $"{Assembly.GetExecutingAssembly().GetName().Name}.xml";
+                var xmlPath = Path.Combine(AppContext.BaseDirectory, xmlFile);
+                c.IncludeXmlComments(xmlPath);
                 c.SwaggerDoc("v1", new() { Title = "UniVolunteerApi", Version = "v1" });
                 c.AddSecurityDefinition("Bearer", new OpenApiSecurityScheme
                 {
@@ -102,7 +105,7 @@ namespace UniVolunteerApi
                                 Id = "Bearer"
                             }
                         },
-                        new string[] { }
+                        Array.Empty<string>()
                     }
                 });
             });
