@@ -3,6 +3,9 @@ using System.ComponentModel.DataAnnotations;
 
 namespace UniVolunteerApi.DTOs.Requests
 {
+    /// <summary>
+    /// Представляет собой "объект переноса данных" для запроса создания пользователя.
+    /// </summary>
     public record CreateUserDto
     {
         /// <summary>

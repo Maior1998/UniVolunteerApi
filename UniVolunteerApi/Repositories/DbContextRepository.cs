@@ -11,8 +11,14 @@ using UniVolunteerDbModel.Model;
 
 namespace UniVolunteerApi.Repositories
 {
+    /// <summary>
+    /// Представляет собой репозиторий, работающий на основе ORM EntityFramework.
+    /// </summary>
     public class DbContextRepository : IUniRepository
     {
+        /// <summary>
+        /// Инициирует новый экземпляр данного репозитория и сбрасывает его.
+        /// </summary>
         public DbContextRepository()
         {
             Reset();

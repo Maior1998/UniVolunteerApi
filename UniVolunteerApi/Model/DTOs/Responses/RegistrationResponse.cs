@@ -6,6 +6,9 @@ using UniVolunteerApi.Configuration;
 
 namespace UniVolunteerApi.DTOs.Responses
 {
+    /// <summary>
+    /// Ответ на запрос регистрации пользователя.
+    /// </summary>
     public class RegistrationResponse : AuthResult
     {
     }

@@ -57,20 +57,6 @@ namespace UniVolunteerApi.Controllers
             return Ok(user.ConvertToUserDto());
         }
 
-        [HttpPost]
-        public async Task<ActionResult> SetRoleToUser([FromBody] SetRoleToUserRequest request)
-        {
-
-            User user = await repository.GetUserAsync(request.UserId);
-            if (user == null)
-                return NotFound();
-            UserRole role = await repository.GetUserRoleAsync(request.RoleId);
-            if (role == null)
-                return NotFound();
-
-            await repository.SetUserRole(request.UserId, request.RoleId);
-            return NoContent();
-
-        }
+        
     }
 }

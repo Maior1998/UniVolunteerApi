@@ -3,6 +3,9 @@ using System.ComponentModel.DataAnnotations;
 
 namespace UniVolunteerApi.DTOs.Requests
 {
+    /// <summary>
+    /// Представляет собой объект данных запроса обновления данных пользователя.
+    /// </summary>
     public class UpdateUserDto
     {
         /// <summary>
