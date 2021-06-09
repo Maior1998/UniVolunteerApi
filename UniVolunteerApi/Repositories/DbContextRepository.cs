@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Security.Cryptography.X509Certificates;
 using System.Threading.Tasks;
 
 using Microsoft.EntityFrameworkCore;
@@ -10,8 +11,14 @@ using UniVolunteerDbModel.Model;
 
 namespace UniVolunteerApi.Repositories
 {
+    /// <summary>
+    /// Представляет собой репозиторий, работающий на основе ORM EntityFramework.
+    /// </summary>
     public class DbContextRepository : IUniRepository
     {
+        /// <summary>
+        /// Инициирует новый экземпляр данного репозитория и сбрасывает его.
+        /// </summary>
         public DbContextRepository()
         {
             Reset();
@@ -69,14 +76,16 @@ namespace UniVolunteerApi.Repositories
             context.SaveChanges();
         }
 
-        public Task<IEnumerable<User>> GetAllUsersAsync()
+        public Task<User[]> GetAllUsersAsync()
         {
-            throw new NotImplementedException();
+            UniVolunteerContext context = GetContext();
+            return context.Users.ToArrayAsync();
         }
 
         public Task<User> GetUserAsync(Guid id)
         {
-            throw new NotImplementedException();
+            UniVolunteerContext context = GetContext();
+            return context.Users.SingleOrDefaultAsync(x => x.Id == id);
         }
 
         public Task<User> GetUserAsync(string login)
@@ -119,12 +128,111 @@ namespace UniVolunteerApi.Repositories
 
         public Task<RefreshToken> GetRefreshTokenAsync(string token)
         {
-            throw new NotImplementedException();
+            UniVolunteerContext context = GetContext();
+            return context.RefreshTokens.SingleOrDefaultAsync(x => x.Token == token);
         }
 
         public Task UpdateRefreshTokenAsync(RefreshToken token)
         {
-            throw new NotImplementedException();
+            UniVolunteerContext context = GetContext();
+            context.RefreshTokens.Update(token);
+            return context.SaveChangesAsync();
         }
+
+        public async Task EnsureUserEnrolledToEvent(Guid userId, Guid eventId)
+        {
+            UniVolunteerContext context = GetContext();
+            User user = await context.Users.Include(x => x.ParticipatesInEvents).SingleAsync(x => x.Id == userId);
+            if (user.ParticipatesInEvents.Any(x => x.Id == eventId)) return;
+            UniEvent uniEvent = await context.UniEvents.SingleAsync(x => x.Id == eventId);
+            user.ParticipatesInEvents.Add(uniEvent);
+            await context.SaveChangesAsync();
+        }
+
+        public async Task EnsureUserExitedFromEvent(Guid userId, Guid eventId)
+        {
+            UniVolunteerContext context = GetContext();
+            User user = await context.Users.Include(x => x.ParticipatesInEvents).SingleAsync(x => x.Id == userId);
+            UniEvent uniEvent = user.ParticipatesInEvents.SingleOrDefault(x => x.Id == eventId);
+            if (uniEvent == null) return;
+            user.ParticipatesInEvents.Remove(uniEvent);
+            await context.SaveChangesAsync();
+
+        }
+
+        public async Task<IEnumerable<UniEvent>> GetUserParticipatedInEvents(Guid userId)
+        {
+            UniVolunteerContext context = GetContext();
+            IEnumerable<UniEvent> events = await context.UniEvents.Where(x => x.Participants.Any(y=>y.Id == userId)).ToArrayAsync();
+            return events;
+        }
+
+        public async Task<UserRole> CreateUserRole(UserRole role)
+        {
+            UniVolunteerContext context = GetContext();
+            await context.UserRoles.AddAsync(role);
+            await context.SaveChangesAsync();
+            return role;
+        }
+
+        public async Task DeleteUserRole(Guid id)
+        {
+            UniVolunteerContext context = GetContext();
+            UserRole userRole = await context.UserRoles.SingleAsync(x => x.Id == id);
+            context.UserRoles.Remove(userRole);
+            await context.SaveChangesAsync();
+        }
+
+        public async Task UpdateUserRole(UserRole role)
+        {
+            UniVolunteerContext context = GetContext();
+            context.Update(role);
+            await context.SaveChangesAsync();
+        }
+
+        public Task<UserRole> GetUserRoleAsync(Guid id)
+        {
+            UniVolunteerContext context = GetContext();
+            return context.UserRoles.SingleAsync(x => x.Id == id);
+        }
+
+        public Task<UserRole[]> GetUserRoles()
+        {
+            UniVolunteerContext context = GetContext();
+            return context.UserRoles.ToArrayAsync();
+        }
+
+        public async Task SetUserRole(Guid userId, Guid roleId)
+        {
+            UniVolunteerContext context = GetContext();
+            User user = await context.Users.SingleAsync(x => x.Id == userId);
+            user.RoleId = roleId;
+            await context.SaveChangesAsync();
+        }
+
+        public async Task SetRoleAccesses(Guid roleId, SecurityAccess newAccess)
+        {
+            UniVolunteerContext context = GetContext();
+            UserRole userRole = await context.UserRoles.SingleAsync(x => x.Id == roleId);
+            userRole.Access = newAccess;
+            await context.SaveChangesAsync();
+        }
+
+        public async Task EnsureRoleHaveAccess(Guid roleId, SecurityAccess access)
+        {
+            UniVolunteerContext context = GetContext();
+            UserRole userRole = await context.UserRoles.SingleAsync(x => x.Id == roleId);
+            userRole.Access |= access;
+            await context.SaveChangesAsync();
+        }
+
+        public async Task EnsureRoleNotHaveAccess(Guid roleId, SecurityAccess access)
+        {
+            UniVolunteerContext context = GetContext();
+            UserRole userRole = await context.UserRoles.SingleAsync(x => x.Id == roleId);
+            userRole.Access &= ~(access);
+            await context.SaveChangesAsync();
+        }
+
     }
 }

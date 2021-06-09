@@ -20,6 +20,18 @@ namespace UniVolunteerDbModel
 
             modelBuilder
                 .Entity<User>()
+                .HasMany(x => x.CreatedUniEvents)
+                .WithOne(x => x.CreatedBy)
+                .HasForeignKey(x => x.CreatedById);
+
+            modelBuilder
+                .Entity<User>()
+                .HasMany<UniEvent>()
+                .WithOne(x => x.ModifiedBy)
+                .HasForeignKey(x => x.ModifiedById);
+
+            modelBuilder
+                .Entity<User>()
                 .HasOne(x => x.Role)
                 .WithMany(x => x.UsersInRole)
                 .HasForeignKey(x => x.RoleId);
