@@ -131,7 +131,7 @@ namespace UniVolunteerApi.Moq
         public async Task EnsureRoleHaveAccessTest()
         {
             //Arange
-            var roleId = Guid.NewGuid();
+            Guid roleId = Guid.NewGuid();
             UserRoleWithAccessDto userRoleWithAccessDto = new UserRoleWithAccessDto() { RoleId = roleId };
             UserRole role = new UserRole() { Id = roleId };
             _repository.Setup(x => x.GetUserRoleAsync(roleId)).ReturnsAsync(role);
@@ -148,7 +148,7 @@ namespace UniVolunteerApi.Moq
         public async Task EnsureRoleNotHaveAccessTest()
         {
             //Arange
-            var roleId = Guid.NewGuid();
+            Guid roleId = Guid.NewGuid();
             UserRoleWithAccessDto userRoleWithAccessDto = new UserRoleWithAccessDto() { RoleId = roleId };
             UserRole role = new UserRole() { Id = roleId };
             _repository.Setup(x => x.GetUserRoleAsync(roleId)).ReturnsAsync(role);
@@ -165,7 +165,7 @@ namespace UniVolunteerApi.Moq
         public async Task SetRoleAccessesTest()
         {
             //Arange
-            var roleId = Guid.NewGuid();
+            Guid roleId = Guid.NewGuid();
             UserRole userRole = new UserRole() { Id = roleId };
             _repository.Setup(x => x.GetUserRoleAsync(roleId)).ReturnsAsync(userRole);
 

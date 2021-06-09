@@ -32,21 +32,48 @@ namespace UniVolunteerApi.Moq
         public async Task RegisterTest()
         {
             //Arange
-            var guid = Guid.NewGuid();
-            var fullNameUser = "full name";
-            var loginUser = "login";
-            var passwordUser = "password";
-            var user = new User() {Id = guid, FullName = fullNameUser, Login = loginUser};
+            Guid guid = Guid.NewGuid();
+            string fullNameUser = "full name";
+            string loginUser = "login";
+            string passwordUser = "password";
+            User user = new User() {Id = guid, FullName = fullNameUser, Login = loginUser};
 
             _repository.Setup(x => x.GetUserAsync(guid)).ReturnsAsync(user);
-            _repository.Setup(x => x.CreateUserAsync(user)).ReturnsAsync(user);
+            _repository.Setup(x => x.CreateUserAsync(It.IsAny<User>())).ReturnsAsync(user);
 
             //Act
-            var userRegistration = new UserRegistrationDto() { FullName = fullNameUser, Login = loginUser, Password = passwordUser};
-            var buf = _authManamentController.Register(userRegistration); // создает нового пользователя
+            UserRegistrationDto userRegistration = new UserRegistrationDto() { FullName = fullNameUser, Login = loginUser, Password = passwordUser};
+            ActionResult<AuthResult> register = await _authManamentController.Register(userRegistration); // создает нового пользователя
 
             //Assert
-            Assert.NotNull(buf.Result);
+            Assert.NotNull(register.Result);
+            Assert.True(((AuthResult)((OkObjectResult)register.Result).Value).Success);
         }
+
+        [Fact]
+        public async Task LoginTest()
+        {
+            //Arange
+            var loginUser = "login";
+            var passwordUser = "password";
+            var userId = Guid.NewGuid();
+            LoginRequest loginRequest = new LoginRequest() { Login = loginUser, Password = passwordUser };
+            string salt = SaltHelper.GenerateSalt();
+            string hash = SaltHelper.GetHash(passwordUser, salt);
+
+            User user = new User() { Login = loginUser, Id = userId, PasswordHash=hash, Salt=salt};
+            
+
+            _repository.Setup(x => x.GetUserAsync(loginUser)).ReturnsAsync(user);
+
+            //Act
+            ActionResult login = await _authManamentController.Login(loginRequest);
+
+            //Assert
+            Assert.NotNull(login);
+            Assert.IsType<OkObjectResult>(login);
+        }
+
+       
     }
 }
