@@ -9,6 +9,7 @@ using Moq;
 using UniVolunteerApi.Repositories;
 using UniVolunteerApi.Controllers;
 using UniVolunteerDbModel.Model;
+using UniVolunteerApi.Services;
 
 namespace UniVolunteerApi.Moq
 {
@@ -16,10 +17,11 @@ namespace UniVolunteerApi.Moq
     {
         private readonly EnrollmentController _enrollmentController;
         private readonly Mock<IUniRepository> _repository = new Mock<IUniRepository>();
+        private readonly Mock<IUniVolunteerSession> _session = new Mock<IUniVolunteerSession>();
 
         public EnrollmentControllerTests()
         {
-            _enrollmentController = new EnrollmentController(_repository.Object);
+            _enrollmentController = new EnrollmentController(_repository.Object, _session.Object);
         }
 
         [Fact]
