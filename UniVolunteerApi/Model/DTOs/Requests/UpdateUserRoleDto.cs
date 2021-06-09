@@ -6,6 +6,9 @@ using System.Threading.Tasks;
 
 namespace UniVolunteerApi.Model.DTOs.Requests
 {
+    /// <summary>
+    /// Представляет собой объект данных запроса обновления данных роли.
+    /// </summary>
     public record UpdateUserRoleDto
     {
         /// <summary>
